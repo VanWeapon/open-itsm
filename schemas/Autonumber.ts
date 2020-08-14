@@ -1,7 +1,4 @@
 import { Table } from "./Table";
-import { AppEvent } from "./AppEvent";
-import { Incident } from "./Incident";
-import { DBInit } from "./SystemFile";
 
 export class Autonumber extends Table {
 	private table_class: string;

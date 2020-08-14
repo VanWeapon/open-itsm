@@ -1,5 +1,4 @@
 import { SystemFile } from "./SystemFile";
-import { AppEvent } from "./AppEvent";
 
 export class Table extends SystemFile {
 	constructor() {
