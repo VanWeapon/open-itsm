@@ -33,7 +33,7 @@ This way, all source code for UI Rendering is shareable to some extent across al
 git clone https://github.com/VanWeapon/open-itsm.git
 #install the dependencies
 npm install
-#change directory to the report
+#change directory to the repo
 cd open-itsm
 #start playing around
 ts-node ./playground.ts
