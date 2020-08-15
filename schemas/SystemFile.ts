@@ -1,20 +1,12 @@
 import { AppEvent } from "./AppEvent";
 import { v4 } from "uuid";
-import * as fs from "fs/promises";
 import * as path from "path";
 /**
- * @name DBInit
- * @description Mandatory fields for initialising a new SystemFile
+ * @name SystemFile
+ * @description the base class for all record type definitions
+ * @property {class}: Must be defined on every new class that extends SystemFile
  */
-export type DBInit = {
-	class: string;
-	user: string;
-	time: number;
-};
-
 export abstract class SystemFile extends Object {
-	protected name: string;
-	protected label: string;
 	protected class: string;
 	protected created: Date = new Date();
 	protected updated: Date;
@@ -42,10 +34,28 @@ export abstract class SystemFile extends Object {
 		}
 	}
 
+	public setValue(propertyName: string, value: any) {
+		if (!this.hasOwnProperty(propertyName)) {
+			throw `${this.class} does not have the field ${propertyName}`;
+		} else {
+			try {
+				this[propertyName] = value;
+				return true;
+			} catch {
+				throw `${
+					this.class
+				} ${propertyName} is not assignable to the type ${typeof value}`;
+			}
+		}
+	}
+
 	public generateGUID(): string {
 		return v4();
 	}
 
+	/**
+	 * This should be related to the API event which triggered the initialisation of a new record
+	 */
 	private getEvent(): AppEvent {
 		return {
 			user: "12345",
@@ -53,17 +63,12 @@ export abstract class SystemFile extends Object {
 		};
 	}
 
-	/**
-	 * Saves the object to the database
-	 */
-	public async insert() {
+	private getFileName() {
 		let fileName = this.class + ".db";
 		let dataLocation = path.resolve("./database/data/");
 		let dataFile = path.join(dataLocation, fileName);
 
-		await fs
-			.appendFile(dataFile, JSON.stringify(this))
-			.catch((e) => console.log(e));
+		return dataFile;
 	}
 
 	public getClassName() {

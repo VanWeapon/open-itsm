@@ -23,7 +23,9 @@
   },
   "homepage": "https://github.com/VanWeapon/open-itsm#readme",
   "dependencies": {
+    "@types/nedb": "^1.8.10",
     "koa": "^2.13.0",
+    "nedb": "^1.8.0",
     "pg": "^8.3.0",
     "uuid": "^8.3.0"
   },

@@ -1,14 +1,15 @@
-import { Table } from "./Table";
+export interface INumber {
+	prefix: string;
+	digits: number;
+	number: string;
+}
 
-export class Autonumber extends Table {
+export class Autonumber {
 	private table_class: string;
 	private prefix: string;
 	private digits: number;
 
-	constructor() {
-		super();
-		this.class = "s_number";
-	}
+	constructor() {}
 
 	public static getNextNumber(className): string {
 		let prefix;
