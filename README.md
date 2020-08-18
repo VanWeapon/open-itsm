@@ -35,6 +35,6 @@ git clone https://github.com/VanWeapon/open-itsm.git
 npm install
 #change directory to the repo
 cd open-itsm
-#start playing around
-ts-node ./playground.ts
+#Launch the API server
+ts-node ./server/APIServer.ts
 ```
