@@ -1,4 +1,5 @@
-export async function logger(context, next) {
+export async function logger(ctx, next) {
 	await next();
-	console.log(context);
+	const rt = ctx.response.get("X-Response-Time");
+	console.log(`${ctx.method} ${ctx.url} - ${rt}`);
 }

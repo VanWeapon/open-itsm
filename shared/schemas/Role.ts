@@ -1,4 +1,4 @@
-import { SystemFile } from "./systemfile";
+import { SystemFile } from "./SystemFile";
 
 export class Role extends SystemFile {
 	private name: string;

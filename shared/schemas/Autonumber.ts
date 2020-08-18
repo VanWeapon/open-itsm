@@ -11,29 +11,14 @@ export class Autonumber {
 
 	constructor() {}
 
-	public static getNextNumber(className): string {
-		let prefix;
-		let digits;
-		//replace with DB query
-		switch (className) {
-			case "task":
-				prefix = "TASK";
-				digits = 7;
-				break;
-			case "incident":
-				prefix = "INC";
-				digits = 7;
-				break;
-			default:
-				prefix = "NUM";
-				digits = 10;
-				break;
-		}
+	public static getNextNumber(numberClass: INumber): string {
+		let prefix = numberClass.prefix;
+		let digits = numberClass.digits;
 
+		//All this does is provide a completely random number, need to implement proper autonumbering system
 		let numStr = "";
 		var newNum = Math.floor(Math.random() * 10 * digits * 1000);
 		for (var i = 0; i < digits; i++) numStr += "0";
-
 		numStr = (numStr + newNum).slice(-digits);
 		numStr = prefix + numStr;
 		return numStr;

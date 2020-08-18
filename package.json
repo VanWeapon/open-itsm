@@ -1,39 +1,42 @@
 {
-  "name": "open-itsm",
-  "version": "0.0.1",
-  "description": "Open source ITSM database",
-  "main": "index.js",
-  "directories": {
-    "example": "examples"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/VanWeapon/open-itsm.git"
-  },
-  "keywords": [
-    "itsm"
-  ],
-  "author": "Luke Van Epen",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/VanWeapon/open-itsm/issues"
-  },
-  "homepage": "https://github.com/VanWeapon/open-itsm#readme",
-  "dependencies": {
-    "@types/nedb": "^1.8.10",
-    "koa": "^2.13.0",
-    "nedb": "^1.8.0",
-    "pg": "^8.3.0",
-    "uuid": "^8.3.0"
-  },
-  "devDependencies": {
-    "@types/koa": "^2.11.3",
-    "@types/node": "^14.0.27",
-    "@types/pg": "^7.14.4",
-    "@types/uuid": "^8.3.0",
-    "ts-node": "^8.10.2"
-  }
+	"name": "open-itsm",
+	"version": "0.0.1",
+	"description": "Open source ITSM database",
+	"main": "index.js",
+	"directories": {
+		"example": "examples"
+	},
+	"scripts": {},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/VanWeapon/open-itsm.git"
+	},
+	"keywords": [
+		"itsm"
+	],
+	"author": "Luke Van Epen",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/VanWeapon/open-itsm/issues"
+	},
+	"homepage": "https://github.com/VanWeapon/open-itsm#readme",
+	"dependencies": {
+		"koa": "^2.13.0",
+		"koa-bodyparser": "^4.3.0",
+		"koa-router": "^9.4.0",
+		"nedb": "^1.8.0",
+		"pg": "^8.3.0",
+		"uuid": "^8.3.0"
+	},
+	"devDependencies": {
+		"@types/assert": "^1.5.1",
+		"@types/koa": "^2.11.3",
+		"@types/koa-bodyparser": "^4.3.0",
+		"@types/koa-router": "^7.4.1",
+		"@types/nedb": "^1.8.10",
+		"@types/node": "^14.0.27",
+		"@types/pg": "^7.14.4",
+		"@types/uuid": "^8.3.0",
+		"ts-node": "^8.10.2"
+	}
 }

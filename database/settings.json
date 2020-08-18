@@ -1,3 +1,4 @@
 {
-    "connectionString": ""
+    "connectionString": "",
+    "dbPath": "C:\\Users\\vanwe\\OneDrive\\Documents\\git\\open-itsm\\database\\data"
 }

@@ -14,6 +14,6 @@ export class Task extends Table implements INumber {
 	constructor() {
 		super();
 		this.class = "task";
-		this.number = Autonumber.getNextNumber("task");
+		this.number = Autonumber.getNextNumber(this);
 	}
 }

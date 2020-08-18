@@ -15,7 +15,7 @@ let incDB = new DB(testinc);
 incDB.insert();
 
 let taskDB = new DB();
-taskDB.loadDatabase("task");
+taskDB.initialise("task");
 taskDB.insert(testTask);
 
 let luke = new User();
@@ -25,3 +25,10 @@ console.log(luke.getValue("name"));
 
 let userDB = new DB(luke);
 userDB.insert();
+
+let searcher = new DB();
+searcher.initialise("s_user");
+
+searcher.loadRecord("name", "Luke Van Epen").then((document) => {
+	console.log(document);
+});

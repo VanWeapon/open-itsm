@@ -9,6 +9,6 @@ export class Incident extends Task {
 	constructor() {
 		super();
 		this.class = "incident";
-		this.number = Autonumber.getNextNumber("incident");
+		this.number = Autonumber.getNextNumber(this);
 	}
 }
