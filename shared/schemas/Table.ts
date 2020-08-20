@@ -5,18 +5,27 @@ import { Field } from "../fields/SystemField";
 export class Table extends SystemFile {
 	constructor() {
 		super();
-		this.class.value = "s_dbo";
+		this.class.updateValue("s_dbo");
 	}
 
 	public getValue(field: string) {
-		const internalField = <Field>this[field];
-		const value = internalField.getValue();
-		return value;
+		try {
+			const internalField = this[field] as Field;
+			const value = internalField.getValue();
+			return value;
+		} catch (error) {
+			return error;
+		}
 	}
 
 	public getDisplayValue(field: string) {
-		if (this[field].display) return this[field].display;
-		else return this[field].value;
+		try {
+			const internalField = this[field] as Field;
+			const value = internalField.getDisplayValue();
+			return value;
+		} catch (error) {
+			return error;
+		}
 	}
 
 	public getReferencedRecord(field: string) {}

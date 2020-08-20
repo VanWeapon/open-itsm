@@ -5,13 +5,14 @@
 import { Field } from "./SystemField";
 
 export class StringField extends Field {
-	public name: string = "string";
-	public label: string = "String";
-	public length: number = Number.MAX_SAFE_INTEGER;
+	public readonly name: string = "string";
+	public readonly label: string = "String";
+	public readonly length: number = Number.MAX_SAFE_INTEGER;
+	public readonly value: string = "";
 
-	constructor(value: string) {
+	constructor(value?: string) {
 		super();
-		this.trySetValue(value);
+		if (value) this.trySetValue(value);
 	}
 
 	public validateValue(value: any) {

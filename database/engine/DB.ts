@@ -12,16 +12,16 @@ export interface DBConfig {
 }
 
 export class DB {
-	private connectionString: string;
-	private dbFileName: string;
+	private connectionString: string = "";
+	private dbFileName: string = "";
 	private dbPath: string = path.resolve(
 		FileManager.projectRoot,
 		"/database/data"
 	);
-	private dbFullPath: string;
-	private db: Datastore;
-	private client;
-	private file: SystemFile;
+	private dbFullPath: string = "";
+	private db: Datastore | undefined;
+	private client: undefined;
+	private file: SystemFile | undefined;
 	constructor(config?: DBConfig) {
 		if (!config) {
 			return;
@@ -44,6 +44,8 @@ export class DB {
 	}
 
 	public insert(file?: SystemFile) {
+		if (!this.db)
+			throw "You need to initialise the database first. Use DB.initialise(className) to load the data store";
 		console.log("Inserting file: ");
 		if (!file) {
 			console.log(util.inspect(this.file));
@@ -62,13 +64,16 @@ export class DB {
 		console.debug("DB Initialised from file: " + this.dbFullPath);
 	}
 
-	public async loadRecord(fieldName, fieldValue): Promise<string> {
-		if (!this.db) {
-			throw "You need to initialise the database first. Use DB.initialise(className) to load the data store";
-		}
-		var query = {};
+	public async loadRecord(
+		fieldName: string,
+		fieldValue: string
+	): Promise<string> {
+		var query: { [index: string]: any } = {};
 		query[fieldName] = fieldValue;
 		return new Promise((resolve, reject) => {
+			if (!this.db) {
+				throw "You need to initialise the database first. Use DB.initialise(className) to load the data store";
+			}
 			this.db.findOne(query, (err, document) => {
 				if (err) {
 					reject(err);
@@ -80,18 +85,24 @@ export class DB {
 	}
 
 	public async loadAll(): Promise<string[]> {
-		if (!this.db) {
-			throw "No db";
-		}
 		return new Promise((resolve, reject) => {
 			try {
-				this.db.find({}, (err, docs) => {
-					if (err) {
-						reject(err);
-					} else {
-						resolve(docs);
+				if (!this.db) {
+					throw "You need to initialise the database first. Use DB.initialise(className) to load the data store";
+				}
+				this.db.find(
+					{},
+					(
+						err: any,
+						docs: string[] | PromiseLike<string[]> | undefined
+					) => {
+						if (err) {
+							reject(err);
+						} else {
+							resolve(docs);
+						}
 					}
-				});
+				);
 			} catch (e) {
 				reject(e);
 			}
@@ -102,8 +113,14 @@ export class DB {
 
 	private getFilePathFromClass(className?: string) {
 		let fileName: string;
-		if (!className) fileName = this.file.getClassName() + ".db";
-		else fileName = className + ".db";
+		if (!className && !this.file) {
+			throw "DB connector is not initialised with a file, you need to pass a className parameter to this method";
+		}
+		if (!className && this.file) {
+			fileName = this.file.getClassName() + ".db";
+		} else {
+			fileName = className + ".db";
+		}
 
 		let dataLocation = path.resolve(this.dbPath);
 

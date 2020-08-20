@@ -2,9 +2,7 @@ import { SystemFile } from "./SystemFile";
 import { StringField } from "../fields/String";
 
 export class Role extends SystemFile {
-	private name: StringField;
-	private parent: Role;
-	private contains: Role[];
+	private name: StringField = new StringField("");
 
 	constructor() {
 		super();

@@ -10,3 +10,7 @@ user1.setValue("last_name", "Van Epen");
 
 //Calculated value based on an onChange event handler
 console.log(user1.getValue("name"));
+
+user1.getDisplayValue("name");
+
+user1.name.getDisplayValue();

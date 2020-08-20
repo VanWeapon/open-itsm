@@ -15,10 +15,9 @@ export class Task extends Table {
 	constructor() {
 		super();
 		this.class.updateValue("task");
-		this.number = new AutoNumberField(
-			this.prefix,
-			this.digits,
-			this.class.name
-		);
+		this.number = new AutoNumberField({
+			prefix: this.prefix,
+			digits: this.digits,
+		});
 	}
 }

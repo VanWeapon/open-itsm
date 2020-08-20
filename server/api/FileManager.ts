@@ -2,8 +2,15 @@ import * as fs from "fs/promises";
 import * as path from "path";
 import { ParameterizedContext, Next } from "koa";
 import { IRouterParamContext } from "koa-router";
+
+/**
+ * @name FileManager - contains methods for reading, parsing and retreiving files throughout the open-itsm project directory via API calls
+ * @static
+ * @property {string} projectRoot - the root directory for this project, initialised through process.env.projectRoot when the API is started
+ * @property {string} sharedSchemaPath - the directory of the shared/schemas folder
+ */
 export class FileManager {
-	public static projectRoot: string = process.env.projectRoot;
+	public static projectRoot: string = process.env.projectRoot || "";
 	public static sharedSchemaPath: string = path.resolve(
 		FileManager.projectRoot,
 		"./shared/schemas"
@@ -12,12 +19,16 @@ export class FileManager {
 	public static async createFile(
 		ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
 		next: Next
-	) {}
+	) {
+		ctx.body = "Method not implemented, come back later";
+	}
 
 	public static async updateFile(
 		ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
 		next: Next
-	) {}
+	) {
+		ctx.body = "Method not implemented, come back later";
+	}
 
 	/**
 	 * GET /api/file/

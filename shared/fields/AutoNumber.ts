@@ -1,19 +1,17 @@
 import { StringField } from "./String";
 
 export class AutoNumberField extends StringField {
-	private className: string;
-	private prefix: string;
-	private digits: number;
+	private prefix: string = "NUM";
+	private digits: number = 7;
 	public readonly name: string = "autonumber";
 	public readonly label: string = "Auto Number";
-	public readonly length: 40;
+	public readonly length: number = 40;
 
-	public value: string;
-	constructor(prefix, digits, className) {
+	public readonly value: string = "NUM000000";
+	constructor({ prefix, digits }: { prefix?: any; digits?: any }) {
 		super("");
 		this.prefix = prefix;
 		this.digits = digits;
-		this.className = className;
 		this.setValue(this.getNextNumber());
 	}
 

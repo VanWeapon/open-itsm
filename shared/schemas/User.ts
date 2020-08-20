@@ -1,7 +1,6 @@
 import { Table } from "./Table";
 import { Role } from "./Role";
 import { StringField } from "../fields/String";
-import { CalculatedField } from "../fields/Calculated";
 
 export class User extends Table {
 	public readonly first_name: StringField = new StringField("");
@@ -11,12 +10,11 @@ export class User extends Table {
 	public readonly roles: Role[] = [];
 	constructor() {
 		super();
-		this.class.value = "s_user";
-
+		this.class.updateValue("s_user");
 		this.changeHandlers.push(this.handleNameChange);
 	}
 
-	private handleNameChange(fieldName, oldValue, newValue) {
+	private handleNameChange(fieldName: string, oldValue: any, newValue: any) {
 		console.log(
 			"running handleNameChange: ",
 			fieldName,

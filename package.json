@@ -2,12 +2,14 @@
 	"name": "open-itsm",
 	"version": "0.0.1",
 	"description": "Open source ITSM database",
-	"main": "index.js",
+	"main": "./dist/main.js",
 	"directories": {
 		"example": "examples"
 	},
 	"scripts": {
-		"server": "node .\\dist\\server\\APIServer.js"
+		"start": "node .\\dist\\main.js",
+		"server": "node .\\dist\\server\\APIServer.js",
+		"ts-server": "ts-node .\\server\\APIServer.ts"
 	},
 	"repository": {
 		"type": "git",

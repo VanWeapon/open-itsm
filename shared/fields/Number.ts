@@ -5,10 +5,11 @@
 import { Field } from "./SystemField";
 
 export class NumberField extends Field {
-	public name: string = "number";
-	public label: string = "Number";
-	public length: number = Number.MAX_SAFE_INTEGER;
+	public readonly name: string = "number";
+	public readonly label: string = "Number";
+	public readonly length: number = Number.MAX_SAFE_INTEGER;
 
+	public readonly value: number = 0;
 	constructor(value: number) {
 		super();
 		if (this.validateValue(value)) this.setValue(value);

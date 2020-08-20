@@ -4,7 +4,7 @@ export class DateTimeField extends NumberField {
 	public readonly name: string = "datetime";
 	public readonly label: string = "Date/Time";
 	public readonly length: number = 16;
-	public readonly value: number;
+	public readonly value: number = 0;
 
 	constructor(value: number) {
 		super(value);

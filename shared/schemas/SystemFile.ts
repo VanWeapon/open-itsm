@@ -12,6 +12,8 @@ import { Field } from "../fields/SystemField";
  * @property {class}: Must be defined on every new class that extends SystemFile
  */
 export abstract class SystemFile extends Object {
+	[index: string]: any;
+
 	protected class: StringField;
 	protected created: DateField;
 	protected updated: DateField;
@@ -29,12 +31,16 @@ export abstract class SystemFile extends Object {
 		this.updated = new DateField(init.time);
 		// this.created_by = new FileReferenceField(init.user, "s_user");
 		// this.updated_by = new FileReferenceField(init.user, "s_user");
-		this.created_by = new GUIDField(this.generateGUID());
-		this.updated_by = new GUIDField(this.generateGUID());
-		this.guid = new GUIDField(this.generateGUID());
+		this.created_by = new GUIDField(); //can use this.created_by.updateValue() to set a new GUID
+		this.updated_by = new GUIDField();
+		this.guid = new GUIDField();
 	}
 
-	private handlePropertyChange(fieldName, oldValue, newValue) {
+	private handlePropertyChange(
+		fieldName: string,
+		oldValue: any,
+		newValue: any
+	) {
 		console.log("handlePropertyChange: ", fieldName, oldValue, newValue);
 		if (this.changeHandlers.length > 0) {
 			this.changeHandlers.forEach((handler) => {
@@ -68,10 +74,6 @@ export abstract class SystemFile extends Object {
 				} ${propertyName} is not assignable to the type ${typeof value}`;
 			}
 		}
-	}
-
-	public generateGUID(): string {
-		return v4();
 	}
 
 	/**

@@ -2,7 +2,7 @@ GET http://localhost:3000/api/record/incident HTTP/1.1
 ###
 
 POST http://localhost:3000/api/record/incident HTTP/1.1
-Content-Type: application/json
+Content-Type: application/javascript
 
 {
     "short_description": "Test from API",
@@ -24,4 +24,4 @@ Content-Type: application/json
 GET http://localhost:3000/api/file HTTP/1.1
 
 ### Get File content
-GET http://localhost:3000/api/file/Task HTTP/1.1
+GET http://localhost:3000/api/file/SystemFile HTTP/1.1

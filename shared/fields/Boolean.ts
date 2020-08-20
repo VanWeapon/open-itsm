@@ -6,14 +6,13 @@ export class BooleanField extends Field {
 	public readonly label: string = "Boolean";
 	public readonly length: number = 5;
 
-	public value: boolean;
-
+	public readonly value: boolean = false;
 	constructor(value: boolean) {
 		super();
 		this.trySetValue(value);
 	}
 
-	public validateValue(value): boolean {
+	public validateValue(value: boolean): boolean {
 		return typeof value === "boolean";
 	}
 

@@ -41,10 +41,12 @@ export class DBConnector {
 		try {
 			console.log("Trying to insert record to Database");
 			let newFile = DBConnector.classFactory(tableName);
+			if (newFile === null)
+				throw "No file found for the provided name: " + tableName;
 			console.log(
 				"Factory produced a new File: " + util.inspect(newFile)
 			);
-			let fields = ctx.request.body as object;
+			let fields = ctx.request.body as { [index: string]: any };
 			console.log("Received fields: " + JSON.stringify(fields, null, 2));
 			for (var field in fields) {
 				console.log(
@@ -67,9 +69,19 @@ export class DBConnector {
 		}
 	}
 
-	public static async put(ctx, next) {}
+	public static async put(
+		ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
+		next: Next
+	) {
+		return "method not implemented";
+	}
 
-	public static async delete(ctx, next) {}
+	public static async delete(
+		ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
+		next: Next
+	) {
+		return "method not implemented";
+	}
 
 	private static initDatabaseByName(table: string): DB {
 		//static implementation for POC only
@@ -78,9 +90,9 @@ export class DBConnector {
 		return engine;
 	}
 
-	private static classFactory(className: string): SystemFile {
+	private static classFactory(className: string): SystemFile | null {
 		//In order to dynamically generate Classes we must map them first by name
-		const map = {
+		const map: { [index: string]: any } = {
 			incident: Incident,
 			task: Task,
 			s_user: User,

@@ -1,22 +1,41 @@
-export abstract class Field {
-	public readonly name: string;
-	public readonly label: string;
-	public readonly length: number;
+import { timeStamp } from "console";
 
-	public value: any;
-	constructor() {}
+export abstract class Field extends Object {
+	[index: string]: any;
+	public abstract name: string;
+	public abstract label: string;
+	public abstract length: number;
+
+	public abstract value: any;
+	constructor() {
+		super();
+		Object.setPrototypeOf(this, new.target.prototype);
+	}
 
 	protected setValue(value: any) {
 		this.value = value;
+	}
+
+	protected calculateValue() {
+		if (this.calculated && this.calulationScript) {
+			this.calulationScript.call(this);
+		}
 	}
 
 	protected trySetValue(value: any) {
 		if (this.validateValue(value)) this.setValue(value);
 	}
 
-	public validateValue(value): boolean {
-		if (this.validateLength(value)) return true;
-		else return false;
+	public getValue(): any {
+		return this.value;
+	}
+
+	public updateValue(value: any) {
+		this.trySetValue(value);
+	}
+
+	public getDisplayValue(): any {
+		return this.value;
 	}
 
 	private validateLength(value: string | number | boolean) {
@@ -31,6 +50,11 @@ export abstract class Field {
 				value.length || value.toString().length
 			);
 		}
+	}
+
+	public validateValue(value: string | number | boolean): boolean {
+		if (this.validateLength(value)) return true;
+		else return false;
 	}
 
 	protected throwInvalidValueType(expected: string, actual: string) {
@@ -49,17 +73,5 @@ export abstract class Field {
 		throw new Error(
 			`Invalid value length, maximum length is ${expected}, provided value length is ${actual}`
 		);
-	}
-
-	public getValue(): any {
-		return this.value;
-	}
-
-	public updateValue(value) {
-		this.value = value;
-	}
-
-	public getDisplayValue(): any {
-		return this.value;
 	}
 }
