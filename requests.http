@@ -1,10 +1,27 @@
-GET http://localhost:3000/incident HTTP/1.1
+GET http://localhost:3000/api/record/incident HTTP/1.1
 ###
 
-POST http://localhost:3000/incident HTTP/1.1
+POST http://localhost:3000/api/record/incident HTTP/1.1
 Content-Type: application/json
 
 {
     "short_description": "Test from API",
     "description": "Some new test"
 }
+
+###Create a new File in shared/schemas
+POST http://localhost:3000/api/file HTTP/1.1
+Content-Type: application/json
+
+{
+    "className": "Request",
+    "fileClass": "request",
+    "extends": "Task"
+    
+}
+
+### Get Files 
+GET http://localhost:3000/api/file HTTP/1.1
+
+### Get File content
+GET http://localhost:3000/api/file/Task HTTP/1.1

@@ -1,29 +1,46 @@
 import { AppEvent } from "./AppEvent";
 import { v4 } from "uuid";
 import * as path from "path";
+import { StringField } from "../fields/String";
+import { DateField } from "../fields/Date";
+import { GUIDField } from "../fields/GUID";
+import { FileReferenceField } from "../fields/FileReference";
+import { Field } from "../fields/SystemField";
 /**
  * @name SystemFile
  * @description the base class for all record type definitions
  * @property {class}: Must be defined on every new class that extends SystemFile
  */
 export abstract class SystemFile extends Object {
-	protected class: string;
-	protected created: Date = new Date();
-	protected updated: Date;
-	protected created_by: string;
-	protected updated_by: string;
-	protected guid: string;
+	protected class: StringField;
+	protected created: DateField;
+	protected updated: DateField;
+	protected created_by: GUIDField;
+	protected updated_by: GUIDField;
+	protected guid: GUIDField;
+	protected changeHandlers: Function[] = [];
 
 	constructor() {
 		super();
 		Object.setPrototypeOf(this, new.target.prototype);
 		let init = this.getEvent();
-		this.class = "s_file";
-		this.created = new Date(init.time);
-		this.created_by = init.user;
-		this.updated = new Date(init.time);
-		this.updated_by = init.user;
-		this.guid = this.generateGUID();
+		this.class = new StringField("s_file");
+		this.created = new DateField(init.time);
+		this.updated = new DateField(init.time);
+		// this.created_by = new FileReferenceField(init.user, "s_user");
+		// this.updated_by = new FileReferenceField(init.user, "s_user");
+		this.created_by = new GUIDField(this.generateGUID());
+		this.updated_by = new GUIDField(this.generateGUID());
+		this.guid = new GUIDField(this.generateGUID());
+	}
+
+	private handlePropertyChange(fieldName, oldValue, newValue) {
+		console.log("handlePropertyChange: ", fieldName, oldValue, newValue);
+		if (this.changeHandlers.length > 0) {
+			this.changeHandlers.forEach((handler) => {
+				handler.call(this, fieldName, oldValue, newValue);
+			});
+		}
 	}
 
 	public getValue(propertyName: string): string {
@@ -34,12 +51,16 @@ export abstract class SystemFile extends Object {
 		}
 	}
 
-	public setValue(propertyName: string, value: any) {
+	public setValue(propertyName: string, value: any, display?: any) {
+		console.log("setValue: ", propertyName, value, display);
 		if (!this.hasOwnProperty(propertyName)) {
 			throw `${this.class} does not have the field ${propertyName}`;
 		} else {
 			try {
-				this[propertyName] = value;
+				const oldValue = this[propertyName] as Field;
+				this.handlePropertyChange(propertyName, oldValue.value, value);
+				this[propertyName].value = value;
+				if (display) this[propertyName].display = display;
 				return true;
 			} catch {
 				throw `${

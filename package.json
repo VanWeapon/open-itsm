@@ -6,7 +6,9 @@
 	"directories": {
 		"example": "examples"
 	},
-	"scripts": {},
+	"scripts": {
+		"server": "node .\\dist\\server\\APIServer.js"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/VanWeapon/open-itsm.git"

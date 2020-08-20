@@ -1,13 +1,47 @@
 import { Table } from "./Table";
 import { Role } from "./Role";
+import { StringField } from "../fields/String";
+import { CalculatedField } from "../fields/Calculated";
 
 export class User extends Table {
-	private first_name: string = "";
-	private last_name: string = "";
-	private name: string = this.first_name + " " + this.last_name;
-	private roles: Role[] = [];
+	public readonly first_name: StringField = new StringField("");
+	public readonly last_name: StringField = new StringField("");
+	public readonly name: StringField = new StringField("");
+
+	public readonly roles: Role[] = [];
 	constructor() {
 		super();
-		this.class = "s_user";
+		this.class.value = "s_user";
+
+		this.changeHandlers.push(this.handleNameChange);
+	}
+
+	private handleNameChange(fieldName, oldValue, newValue) {
+		console.log(
+			"running handleNameChange: ",
+			fieldName,
+			oldValue,
+			newValue
+		);
+		if (fieldName == "first_name") {
+			this.setValue("name", newValue + " " + this.last_name.getValue());
+			return true;
+		} else if (fieldName == "last_name") {
+			this.setValue("name", this.first_name.getValue() + " " + newValue);
+			return true;
+		} else {
+			return true;
+		}
+	}
+
+	/**
+	 * Includes resetting calculated values
+	 */
+	public setValue(fieldName: string, fieldValue: string): boolean {
+		super.setValue(fieldName, fieldValue);
+
+		if (fieldName == "first_name" || fieldName == "last_name") {
+		}
+		return true;
 	}
 }

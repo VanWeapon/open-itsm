@@ -1,14 +1,14 @@
 import { Task } from "./Task";
-import { Autonumber } from "./Autonumber";
+import { StringField } from "../fields/String";
+import { AutoNumberField } from "../fields/AutoNumber";
 
 export class Incident extends Task {
-	public readonly number: string;
+	public readonly number: AutoNumberField;
 	public readonly prefix: string = "INC";
 	public readonly digits: number = 7;
 
 	constructor() {
 		super();
-		this.class = "incident";
-		this.number = Autonumber.getNextNumber(this);
+		this.class.updateValue("incident");
 	}
 }

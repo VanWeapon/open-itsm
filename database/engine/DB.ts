@@ -1,8 +1,8 @@
-const dbSettings = require("../settings.json");
 import Datastore from "nedb";
 import * as path from "path";
 import * as util from "util";
 import { SystemFile } from "../../shared/schemas/SystemFile";
+import { FileManager } from "../../server/api/FileManager";
 
 export interface DBConfig {
 	dbPath?: string;
@@ -12,9 +12,12 @@ export interface DBConfig {
 }
 
 export class DB {
-	private connectionString: string = dbSettings.connectionString;
+	private connectionString: string;
 	private dbFileName: string;
-	private dbPath: string = dbSettings.dbPath;
+	private dbPath: string = path.resolve(
+		FileManager.projectRoot,
+		"/database/data"
+	);
 	private dbFullPath: string;
 	private db: Datastore;
 	private client;
@@ -24,7 +27,6 @@ export class DB {
 			return;
 		}
 		if (config.dbPath) this.dbPath = config.dbPath;
-		else this.dbPath = dbSettings.dbPath;
 		if (config.dbFileName) this.dbFileName = config.dbFileName;
 		if (config.connectionString)
 			this.connectionString = config.connectionString;
