@@ -6,8 +6,8 @@ const String_1 = require("../fields/String");
 class Role extends SystemFile_1.SystemFile {
     constructor() {
         super();
+        this.class = new String_1.StringField("s_role");
         this.name = new String_1.StringField("");
-        this.class.updateValue("s_role");
     }
 }
 exports.Role = Role;

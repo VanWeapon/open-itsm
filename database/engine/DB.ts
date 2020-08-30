@@ -1,130 +1,126 @@
-import Datastore from "nedb";
-import * as path from "path";
-import * as util from "util";
-import { SystemFile } from "../../shared/schemas/SystemFile";
-import { FileManager } from "../../server/api/FileManager";
-
-export interface DBConfig {
-	dbPath?: string;
-	dbFileName?: string;
-	connectionString?: string;
-	file?: SystemFile;
-}
+import { Connection, Client, Pool } from "node-postgres";
+import { resolve } from "path";
+const Cursor = require("pg-cursor");
+const formatSQL = require("pg-format");
 
 export class DB {
-	private connectionString: string = "";
-	private dbFileName: string = "";
-	private dbPath: string = path.resolve(
-		FileManager.projectRoot,
-		"/database/data"
-	);
-	private dbFullPath: string = "";
-	private db: Datastore | undefined;
-	private client: undefined;
-	private file: SystemFile | undefined;
-	constructor(config?: DBConfig) {
-		if (!config) {
-			return;
-		}
-		if (config.dbPath) this.dbPath = config.dbPath;
-		if (config.dbFileName) this.dbFileName = config.dbFileName;
-		if (config.connectionString)
-			this.connectionString = config.connectionString;
-
-		if (config.file) {
-			this.file = config.file;
-			if (!this.dbFullPath) this.dbFullPath = this.getFilePathFromClass();
-
-			this.db = new Datastore(this.dbFullPath);
-			this.db.loadDatabase();
-		} else if (config.dbFileName) {
-			this.initialise(config.dbFileName);
-		}
-		console.debug("DB Initialised from file: " + this.dbFullPath);
+	private client: Client | Pool;
+	private selectedTable: string = "";
+	private cursor: any;
+	private selectedRecord: any;
+	private queryStringArray: string[] = [];
+	constructor(client: Client | Pool) {
+		this.client = client;
 	}
 
-	public insert(file?: SystemFile) {
-		if (!this.db)
-			throw "You need to initialise the database first. Use DB.initialise(className) to load the data store";
-		console.log("Inserting file: ");
-		if (!file) {
-			console.log(util.inspect(this.file));
-			this.db.insert(this.file);
-		} else {
-			console.log(util.inspect(file));
-
-			this.db.insert(file);
-		}
+	private close() {
+		this.client.end();
 	}
 
-	public initialise(className: string) {
-		this.dbFullPath = this.getFilePathFromClass(className);
-		this.db = new Datastore(this.dbFullPath);
-		this.db.loadDatabase();
-		console.debug("DB Initialised from file: " + this.dbFullPath);
-	}
-
-	public async loadRecord(
+	public addQuery(
 		fieldName: string,
-		fieldValue: string
-	): Promise<string> {
-		var query: { [index: string]: any } = {};
-		query[fieldName] = fieldValue;
-		return new Promise((resolve, reject) => {
-			if (!this.db) {
-				throw "You need to initialise the database first. Use DB.initialise(className) to load the data store";
-			}
-			this.db.findOne(query, (err, document) => {
+		expectedValue: string,
+		operator?: string
+	) {
+		let sqlSelector = fieldName;
+		let sqlValue = expectedValue;
+		let sqlOperator = "";
+
+		switch (operator) {
+			case "=":
+				sqlOperator = "=";
+				break;
+
+			default:
+				sqlOperator = "=";
+				break;
+		}
+		//SELECT * FROM table_name WHERE fieldName operator expectedValue
+		let text = "WHERE %I %s %L";
+		let values = [sqlSelector, sqlOperator, sqlValue];
+		let escapedSQL = formatSQL.withArray(text, values);
+		console.log(escapedSQL);
+
+		this.queryStringArray.push(escapedSQL);
+	}
+
+	private getFullSQL() {
+		let fullSQL = `SELECT * FROM ${
+			this.selectedTable
+		} ${this.queryStringArray.join(" ")}`;
+		return fullSQL;
+	}
+
+	public insert(record: string | object) {}
+
+	public query() {
+		console.log("Getting cursor with query: ");
+		console.log(this.getFullSQL());
+
+		this.cursor = this.client.query(new Cursor(this.getFullSQL()));
+	}
+
+	public next(): boolean {
+		let recordFound = false;
+		new Promise((resolve, reject) => {
+			this.cursor.read(1, (err: any, rows: string | any[]) => {
 				if (err) {
 					reject(err);
+				}
+				if (!rows) {
+					this.client.end();
+					return false;
+				}
+				if (rows.length === 0) {
+					this.client.end();
+					resolve(false);
 				} else {
-					resolve(document);
+					this.selectedRecord = rows[0];
+					resolve(true);
 				}
 			});
-		});
+		})
+			.then((result) => recordFound)
+			.catch((error) => console.error(error));
+
+		console.log("Returning record found value of: " + recordFound);
+		return recordFound;
 	}
 
-	public async loadAll(): Promise<string[]> {
-		return new Promise((resolve, reject) => {
-			try {
-				if (!this.db) {
-					throw "You need to initialise the database first. Use DB.initialise(className) to load the data store";
-				}
-				this.db.find(
-					{},
-					(
-						err: any,
-						docs: string[] | PromiseLike<string[]> | undefined
-					) => {
-						if (err) {
-							reject(err);
-						} else {
-							resolve(docs);
-						}
-					}
-				);
-			} catch (e) {
-				reject(e);
-			}
-		});
+	public async getAllTableRecords(): Promise<any[] | undefined> {
+		const data = await this.client.query(
+			`SELECT * FROM ${this.selectedTable}`
+		);
+		return data.rows;
+	}
+
+	public async initialise(className: string): Promise<boolean> {
+		this.selectedTable = className;
+
+		console.log("In DB, initialising...");
+
+		let results = await this.client.query(
+			`SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_name = '${className}'`
+		);
+
+		console.log("Results from testing " + className);
+
+		console.log(results);
+
+		if (results.rows.length == 0) return false;
+		else return true;
+	}
+
+	public async getSchemaData(): Promise<any[]> {
+		let fieldData = await this.client.query(
+			`SELECT * FROM INFORMATION_SCHEMA.columns WHERE table_name = '${this.selectedTable}'`
+		);
+
+		console.log(`Logging getSchemaData for ${this.selectedTable}`);
+		console.log(fieldData.rows);
+
+		return fieldData.rows;
 	}
 
 	public update() {}
-
-	private getFilePathFromClass(className?: string) {
-		let fileName: string;
-		if (!className && !this.file) {
-			throw "DB connector is not initialised with a file, you need to pass a className parameter to this method";
-		}
-		if (!className && this.file) {
-			fileName = this.file.getClassName() + ".db";
-		} else {
-			fileName = className + ".db";
-		}
-
-		let dataLocation = path.resolve(this.dbPath);
-
-		let dataFile = path.join(dataLocation, fileName);
-		return dataFile;
-	}
 }

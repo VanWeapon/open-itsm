@@ -1,6 +1,10 @@
-GET http://localhost:3000/api/record/incident HTTP/1.1
-###
 
+### GET All incident records
+GET http://localhost:3000/api/record/incident HTTP/1.1
+
+
+
+### CREATE a new incident record
 POST http://localhost:3000/api/record/incident HTTP/1.1
 Content-Type: application/javascript
 
@@ -9,8 +13,8 @@ Content-Type: application/javascript
     "description": "Some new test"
 }
 
-###Create a new File in shared/schemas
-POST http://localhost:3000/api/file HTTP/1.1
+###Create a new Table
+POST http://localhost:3000/api/schema HTTP/1.1
 Content-Type: application/json
 
 {
@@ -20,8 +24,13 @@ Content-Type: application/json
     
 }
 
-### Get Files 
-GET http://localhost:3000/api/file HTTP/1.1
+### Get Metadata for the incident table 
+GET http://localhost:3000/api/schema/incident HTTP/1.1
 
-### Get File content
-GET http://localhost:3000/api/file/SystemFile HTTP/1.1
+
+### Get Metadata for the incident table 
+GET http://localhost:3000/api/schema/incident HTTP/1.1
+Connection: keep-alive
+
+### Get UI data for the incident table
+GET http://localhost:3000/api/ui/incident HTTP/1.1

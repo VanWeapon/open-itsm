@@ -4,6 +4,7 @@ exports.Field = void 0;
 class Field extends Object {
     constructor() {
         super();
+        this.class = "s_field";
         Object.setPrototypeOf(this, new.target.prototype);
     }
     setValue(value) {

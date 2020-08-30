@@ -14,18 +14,10 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = __importStar(require("path"));
 process.env.projectRoot = path.resolve("./");
-const User_1 = require("./shared/schemas/User");
-let user1 = new User_1.User();
-user1.setValue("first_name", "Luke");
-user1.setValue("last_name", "Van Epen");
-//Calculated value based on an onChange event handler
-console.log(user1.getValue("name"));
-user1.getDisplayValue("name");
-user1.name.getDisplayValue();

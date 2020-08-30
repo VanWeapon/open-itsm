@@ -14,7 +14,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -27,15 +27,15 @@ const GUID_1 = require("../fields/GUID");
 /**
  * @name SystemFile
  * @description the base class for all record type definitions
- * @property {class}: Must be defined on every new class that extends SystemFile
+ * @property {class}: Maps to the Table name in postgres
  */
 class SystemFile extends Object {
     constructor() {
         super();
+        this.class = new String_1.StringField("s_file");
         this.changeHandlers = [];
         Object.setPrototypeOf(this, new.target.prototype);
         let init = this.getEvent();
-        this.class = new String_1.StringField("s_file");
         this.created = new Date_1.DateField(init.time);
         this.updated = new Date_1.DateField(init.time);
         // this.created_by = new FileReferenceField(init.user, "s_user");

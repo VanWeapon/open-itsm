@@ -6,11 +6,11 @@ const String_1 = require("../fields/String");
 class User extends Table_1.Table {
     constructor() {
         super();
+        this.class = new String_1.StringField("s_user");
         this.first_name = new String_1.StringField("");
         this.last_name = new String_1.StringField("");
         this.name = new String_1.StringField("");
         this.roles = [];
-        this.class.updateValue("s_user");
         this.changeHandlers.push(this.handleNameChange);
     }
     handleNameChange(fieldName, oldValue, newValue) {
