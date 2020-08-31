@@ -34,6 +34,7 @@ export async function startServer() {
 
 	/**
 	 * Record api will retreive or insert records into a table.
+	 * @RECORD
 	 */
 	router.get("/api/record/:table", async (ctx, next) => {
 		await RecordAPI.get(ctx, next, client);
@@ -41,15 +42,16 @@ export async function startServer() {
 	router.post("/api/record/:table", async (ctx, next) => {
 		await RecordAPI.post(ctx, next, client);
 	});
-	router.put("/api/record/:table", async (ctx, next) => {
+	router.put("/api/record/:table/:id", async (ctx, next) => {
 		await RecordAPI.put(ctx, next, client);
 	});
-	router.delete("/api/record/:table", async (ctx, next) => {
+	router.delete("/api/record/:table/:id", async (ctx, next) => {
 		await RecordAPI.delete(ctx, next, client);
 	});
 
 	/**
 	 * Schema api will retreive metadata about the table
+	 * @SCHEMA
 	 */
 	//Get table schema metadata
 	router.get("/api/schema/:table", async (ctx, next) => {
@@ -57,21 +59,22 @@ export async function startServer() {
 	});
 
 	//Create new table
-	router.post("/api/schema/", async (ctx, next) => {
+	router.post("/api/schema", async (ctx, next) => {
 		await SchemaAPI.post(ctx, next, client);
 	});
 
 	//Modify table schema properties
-	router.put("/api/schema/:table", async (ctx, next) => {
+	router.put("/api/schema/:table/:id", async (ctx, next) => {
 		await SchemaAPI.put(ctx, next, client);
 	});
 
 	//Drop a table
-	router.delete("/api/schema/:table", async (ctx, next) => {
+	router.delete("/api/schema/:table/:id", async (ctx, next) => {
 		await SchemaAPI.delete(ctx, next, client);
 	});
 
 	/**
+	 * @UI
 	 * UI API
 	 * Used to retreive the UI Elements for a given table form/list/etc
 	 * E.g. query the UI api with /api/ui/incident

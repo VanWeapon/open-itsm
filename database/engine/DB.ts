@@ -1,5 +1,5 @@
 import { Connection, Client, Pool } from "node-postgres";
-import { resolve } from "path";
+import { SchemaBody } from "../../shared/TableSchema";
 const Cursor = require("pg-cursor");
 const formatSQL = require("pg-format");
 
@@ -51,39 +51,69 @@ export class DB {
 		return fullSQL;
 	}
 
-	public insert(record: string | object) {}
+	public async insert(record: { [index: string]: any }): Promise<any> {
+		console.log("Inserting : " + JSON.stringify(record));
 
-	public query() {
+		let fieldNames = [];
+		let fieldValues = [];
+		for (const field in record) {
+			fieldNames.push(field);
+			fieldValues.push(record[field]);
+		}
+		let insertString = `
+		INSERT INTO ${this.selectedTable} (
+			${fieldNames.join(", ")}
+		)
+		VALUES (
+			'${fieldValues.join("', '")}'
+		);
+		`;
+
+		let findString = `
+		SELECT * FROM ${this.selectedTable}
+		ORDER BY created DESC
+		LIMIT 1;
+		`;
+
+		console.log(insertString);
+
+		await this.client.query(insertString);
+		let insertedRecord = await this.client.query(findString);
+
+		return insertedRecord.rows[0];
+	}
+
+	public async query() {
 		console.log("Getting cursor with query: ");
 		console.log(this.getFullSQL());
 
 		this.cursor = this.client.query(new Cursor(this.getFullSQL()));
 	}
 
-	public next(): boolean {
-		let recordFound = false;
-		new Promise((resolve, reject) => {
-			this.cursor.read(1, (err: any, rows: string | any[]) => {
-				if (err) {
-					reject(err);
-				}
-				if (!rows) {
-					this.client.end();
-					return false;
-				}
-				if (rows.length === 0) {
-					this.client.end();
-					resolve(false);
-				} else {
-					this.selectedRecord = rows[0];
-					resolve(true);
-				}
-			});
-		})
-			.then((result) => recordFound)
-			.catch((error) => console.error(error));
+	public async get(guid: string): Promise<any> {
+		let record = await this.client.query(
+			`SELECT * FROM ${this.selectedTable} WHERE guid = '${guid}';`
+		);
+		if (record.rowCount === 1) {
+			this.selectedRecord = record.rows[0].guid;
+			return record.rows[0];
+		} else {
+			return null;
+		}
+	}
 
-		console.log("Returning record found value of: " + recordFound);
+	public async delete(): Promise<boolean> {
+		let deleted = await this.client.query(
+			`DELETE FROM ${this.selectedTable}
+			WHERE guid = '${this.selectedRecord}'`
+		);
+
+		console.log(deleted);
+		return deleted.rowCount === 1;
+	}
+
+	public async next(): Promise<boolean> {
+		let recordFound = false;
 		return recordFound;
 	}
 
@@ -94,32 +124,33 @@ export class DB {
 		return data.rows;
 	}
 
-	public async initialise(className: string): Promise<boolean> {
-		this.selectedTable = className;
-
-		console.log("In DB, initialising...");
+	public async initialise(tableName: string): Promise<boolean> {
+		this.selectedTable = tableName;
 
 		let results = await this.client.query(
-			`SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_name = '${className}'`
+			`SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_name = '${tableName}'`
 		);
 
-		console.log("Results from testing " + className);
-
-		console.log(results);
-
-		if (results.rows.length == 0) return false;
-		else return true;
+		return results.rowCount > 0;
 	}
 
 	public async getSchemaData(): Promise<any[]> {
 		let fieldData = await this.client.query(
 			`SELECT * FROM INFORMATION_SCHEMA.columns WHERE table_name = '${this.selectedTable}'`
 		);
-
-		console.log(`Logging getSchemaData for ${this.selectedTable}`);
-		console.log(fieldData.rows);
-
 		return fieldData.rows;
+	}
+
+	public async createTable(body: SchemaBody): Promise<boolean> {
+		return true;
+	}
+
+	public async testTableExists(tableName: string): Promise<boolean> {
+		let result = await this.client.query(
+			`SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_name = '${tableName}'`
+		);
+
+		return result.rowCount > 0;
 	}
 
 	public update() {}

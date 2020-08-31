@@ -28,6 +28,22 @@ This way, all source code for UI Rendering is shareable to some extent across al
 
 # Install and Use
 
+### PostgreSQL
+
+You will need to have PostgreSQL installed on the machine you are running this.
+
+Then you can create a database named `openitsm` to start using this.
+
+Use the `CreateDB.sql` and `Schema.sql` files to kick-start this if you want, but right now there isnt much there.
+
+Make sure to update the `.env` file with the appropriate settings once done, you decide your own credentials.
+
+### OpenITSM API Server
+
+This repo contains the API server with a connector for directly querying the postgres database.
+
+The `openitsm` database inside of postgres will be where all the data is stored.
+
 ```bash
 #download the repo
 git clone https://github.com/VanWeapon/open-itsm.git
@@ -36,5 +52,5 @@ npm install
 #change directory to the repo
 cd open-itsm
 #Launch the API server
-ts-node ./server/APIServer.ts
+npm run start
 ```

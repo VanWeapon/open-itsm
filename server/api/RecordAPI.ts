@@ -2,6 +2,7 @@ import { DB } from "../../database/engine/DB";
 import { ParameterizedContext, Next } from "koa";
 import { IRouterParamContext } from "koa-router";
 import { Client, Pool } from "pg";
+import { createDecipher } from "crypto";
 
 /**
  * RecordAPI
@@ -46,10 +47,19 @@ export class RecordAPI {
 		client: Client | Pool
 	) {
 		const tableName = ctx.params.table;
+		const fields = ctx.request.body;
 		const engine = new DB(client);
 		engine.initialise(tableName);
 
+		console.log(ctx.request.body);
+
 		try {
+			let createdRecord = await engine.insert(fields);
+			if (createdRecord) {
+				console.log("Record created");
+				ctx.response.status = 201;
+				ctx.response.body = createdRecord;
+			}
 		} catch (e) {
 			console.error(e);
 			ctx.response.body = e;
@@ -72,6 +82,39 @@ export class RecordAPI {
 		next: Next,
 		client: Client | Pool
 	) {
-		next();
+		const tableName = ctx.params.table;
+		const recordID = ctx.params.id;
+
+		const engine = new DB(client);
+		let validTable = await engine.initialise(tableName);
+
+		if (!validTable) {
+			ctx.response.status = 400;
+			ctx.response.body = `Invalid table name ${tableName}`;
+			return;
+		}
+
+		console.log(
+			`Attempting to delete record ${recordID} from table ${tableName}`
+		);
+
+		let foundRecord = await engine.get(recordID);
+		if (foundRecord) {
+			console.log("Found record, trying to delete");
+			let deleted = await engine.delete();
+			if (deleted) {
+				ctx.response.status = 200;
+				ctx.response.body = `${tableName} record with id of ${recordID} was successfully deleted`;
+			} else {
+				ctx.response.status = 500;
+				ctx.response.body = "Error deleting record";
+			}
+		} else {
+			ctx.response.status = 400;
+			ctx.response.body = `No ${tableName} record matching id ${recordID} found`;
+		}
+
+		await next();
+		return;
 	}
 }
