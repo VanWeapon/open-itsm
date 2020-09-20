@@ -1,1 +1,0 @@
-pg_dump -U maint -s openitsm > Schema.sql
