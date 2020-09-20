@@ -1,0 +1,61 @@
+[
+	{
+		"name": "development",
+		"type": "postgres",
+		"host": "localhost",
+		"port": 5432,
+		"username": "maint",
+		"password": "admin",
+		"database": "openitsm-dev",
+		"synchronize": false,
+		"logging": true,
+		"entities": ["src/database/entity/**/*.ts"],
+		"migrations": ["src/database/migration/**/*.ts"],
+		"subscribers": ["src/database/subscriber/**/*.ts"],
+		"cli": {
+			"entitiesDir": "src/database/entity",
+			"migrationsDir": "src/database/migration",
+			"subscribersDir": "src/database/subscriber"
+		}
+	},
+	{
+		"name": "test",
+		"type": "postgres",
+		"host": "localhost",
+		"port": 5432,
+		"username": "maint",
+		"password": "admin",
+		"database": "openitsm-test",
+		"synchronize": false,
+		"dropSchema": true,
+		"logging": true,
+		"entities": ["src/database/entity/**/*.ts"],
+		"migrations": ["src/database/migration/**/*.ts"],
+		"subscribers": ["src/database/subscriber/**/*.ts"],
+		"cli": {
+			"entitiesDir": "src/database/entity",
+			"migrationsDir": "src/database/migration",
+			"subscribersDir": "src/database/subscriber"
+		}
+	},
+	{
+		"name": "default",
+		"type": "postgres",
+		"host": "localhost",
+		"port": 5432,
+		"username": "maint",
+		"password": "admin",
+		"database": "openitsm",
+		"synchronize": false,
+		"dropSchema": false,
+		"logging": true,
+		"entities": ["dist/database/entity/**/*.js"],
+		"migrations": ["dist/database/migration/**/*.js"],
+		"subscribers": ["dist/database/subscriber/**/*.js"],
+		"cli": {
+			"entitiesDir": "dist/database/entity",
+			"migrationsDir": "dist/database/migration",
+			"subscribersDir": "dist/database/subscriber"
+		}
+	}
+]

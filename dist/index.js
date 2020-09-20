@@ -9,14 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.responseTime = void 0;
-function responseTime(ctx, next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const start = Date.now();
-        yield next();
-        const ms = Date.now() - start;
-        ctx.set("X-Response-Time", `${ms}ms`);
-    });
-}
-exports.responseTime = responseTime;
-//# sourceMappingURL=responsetime.js.map
+require("reflect-metadata");
+require("dotenv").config();
+const APIServer_1 = require("./server/APIServer");
+const typeorm_1 = require("typeorm");
+const start = () => __awaiter(void 0, void 0, void 0, function* () {
+    const options = yield typeorm_1.getConnectionOptions(process.env.NODE_ENV);
+    const connection = yield typeorm_1.createConnection(Object.assign(Object.assign({}, options), { name: "default" }));
+    APIServer_1.startServer(connection);
+});
+start();
+//# sourceMappingURL=index.js.map

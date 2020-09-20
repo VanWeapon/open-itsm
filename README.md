@@ -8,6 +8,7 @@ I will continue to add more schemas (tables) to the application.
 
 This project will be written in TypeScript with some supporting platforms to be decided.
 Database will be postgreSQL.
+ORM is TypeORM so that there is minimal direct db maintenance required
 Events will be API driven to support cross platform use.
 
 UI will be created using web technologies, the plan is:
@@ -22,7 +23,7 @@ This way, all source code for UI Rendering is shareable to some extent across al
 ## The plan
 
 -   [x] Prove that it's possible to run an ITSM ticketing tool in-memory using just runtime data and local JSON files for persistent storage
--   [ ] Connect to a fully functional database solution, locally hosted alongside the client to begin with
+-   [x] Connect to a fully functional database solution, locally hosted alongside the client to begin with
 -   [ ] Separate Server and Client so that the OpenITSM database (postgres) can sit in the cloud and accessed via any client (web/mobile/cli/desktop)
 
 # Install and Use
@@ -65,6 +66,6 @@ In no particular order, here are some of the specific features to come for the p
 -   [ ] A table definitions table that will store information about all tables
 -   [ ] A task table as simple data record
 -   [ ] A table for storing buttons that trigger server-side actions from the ui
--   [ ] A table for storing users
--   [ ] A table for storing access rights
+-   [x] A table for storing users
+-   [x] A table for storing access rights
 -   [ ] A table for storing groups
