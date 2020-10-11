@@ -10,19 +10,49 @@ import { ParameterizedContext, Next } from "koa";
 import { IRouterParamContext } from "koa-router";
 import { execSync } from "child_process";
 import { EntityJSON, EntityGenerator } from "./EntityGenerator";
+import { Connection } from "typeorm";
+import { Table } from "../../database/entity/system/Table";
 // import { getConnectionOptions } from "typeorm";
 export class SchemaAPI {
 	public static async get(
 		ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
-		next: Next
+		next: Next,
+		connection: Connection
 	): Promise<void> {
 		const tableName = ctx.params.table || null;
+
+		try {
+			connection.getRepository(tableName);
+		} catch (error) {
+			if (error.name === "RepositoryNotFoundError") {
+				ctx.status = 404;
+				ctx.body = `Table ${tableName} not found`;
+			} else {
+				console.log(error);
+				ctx.status = 400;
+				ctx.body = error;
+			}
+			await next();
+			return;
+		}
 
 		if (!tableName) {
 			ctx.status = 400;
 			ctx.body = "No table name provided";
 			await next();
 			return;
+		} else {
+			const meta = connection.getRepository(tableName).metadata.columns;
+			const columns: any = [];
+			meta.forEach((metaColumn) => {
+				columns.push({
+					column_name: metaColumn.propertyName,
+					type: metaColumn.type,
+					db_name: metaColumn.databaseName,
+				});
+			});
+			ctx.status = 200;
+			ctx.body = columns;
 		}
 
 		next();
@@ -30,8 +60,10 @@ export class SchemaAPI {
 
 	public static async post(
 		ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
-		next: Next
+		next: Next,
+		connection: Connection
 	): Promise<void> {
+		connection.getRepository(Table);
 		const newEntity = ctx.request.body as EntityJSON;
 		const validEntityJSON = EntityGenerator.validateJSON(newEntity);
 		if (!validEntityJSON) {
@@ -73,10 +105,16 @@ export class SchemaAPI {
 
 	public static async put(
 		_ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
-		_next: Next
-	): Promise<void> {}
+		_next: Next,
+		connection: Connection
+	): Promise<void> {
+		connection.getRepository(Table); // placeholder
+	}
 	public static async delete(
 		_ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
-		_next: Next
-	): Promise<void> {}
+		_next: Next,
+		connection: Connection
+	): Promise<void> {
+		connection.getRepository(Table); // placeholder
+	}
 }

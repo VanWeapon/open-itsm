@@ -1,8 +1,17 @@
-import { Entity, Column, BeforeInsert, ManyToMany, JoinTable } from "typeorm";
+import {
+	Entity,
+	Column,
+	BeforeInsert,
+	ManyToMany,
+	JoinTable,
+	ManyToOne,
+} from "typeorm";
+import { Company } from "../core/Company";
+import { Department } from "../core/Department";
 import { Record } from "./Record";
 import { Role } from "./Role";
 
-@Entity("s_user")
+@Entity("s_user", { schema: "system" })
 export class User extends Record {
 	@BeforeInsert()
 	setClassName(): void {
@@ -13,6 +22,12 @@ export class User extends Record {
 
 	@Column("varchar", { length: 127 })
 	first_name: string;
+
+	@ManyToOne(() => Company)
+	company: Company;
+
+	@ManyToOne(() => Department)
+	department: Department;
 
 	@Column("varchar", { length: 127 })
 	last_name: string;

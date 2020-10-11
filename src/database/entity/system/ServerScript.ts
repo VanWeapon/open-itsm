@@ -2,7 +2,7 @@ import { BeforeInsert, Column, Entity, ManyToOne } from "typeorm";
 import { Record } from "./Record";
 import { Table } from "./Table";
 
-@Entity("s_script_server")
+@Entity("s_script_server", { schema: "system" })
 export class ServerScript extends Record {
 	@BeforeInsert()
 	setClassName() {

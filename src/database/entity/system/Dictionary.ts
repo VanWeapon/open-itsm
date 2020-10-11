@@ -1,17 +1,9 @@
 import { Record } from "./Record";
-import {
-	BeforeInsert,
-	Entity,
-	Column,
-	ColumnType,
-	ManyToOne,
-	AfterInsert,
-} from "typeorm";
+import { BeforeInsert, Entity, Column, ManyToOne, AfterInsert } from "typeorm";
 import { Table } from "./Table";
-import { FieldClass } from "./FieldClass";
 import { FieldLabel } from "./FieldLabel";
 
-@Entity("s_dictionary")
+@Entity("s_dictionary", { schema: "system" })
 export class Dictionary extends Record {
 	@BeforeInsert()
 	setClassName(): void {
@@ -39,28 +31,22 @@ export class Dictionary extends Record {
 	@Column("varchar", { length: 80 })
 	column_label: string;
 
-	@ManyToOne(() => FieldClass, {
-		nullable: false,
-		eager: true,
-	})
-	internal_type: ColumnType;
-
 	@ManyToOne(() => Table, {
 		eager: true,
 		nullable: false,
 	})
-	table_name: Table;
+	table: Table;
 
 	@ManyToOne(() => Table, {
 		eager: true,
 		nullable: true,
 	})
-	reference_table: string;
+	reference_table: Table;
 
-	@Column("integer")
+	@Column("integer", { default: 255 })
 	max_length: number;
 
-	@Column("text")
+	@Column("text", { nullable: true })
 	default_value: string;
 
 	@AfterInsert()
@@ -68,7 +54,9 @@ export class Dictionary extends Record {
 		const label = new FieldLabel();
 		label.element = this;
 		label.label = this.column_label;
-		label.table = this.table_name;
+		label.table = this.table;
+		label.created_by = this.created_by;
+		label.updated_by = this.updated_by;
 		label.save();
 	}
 }

@@ -36,7 +36,7 @@ export abstract class Record extends BaseEntity {
 	@Column("varchar", { length: 80 })
 	class_name: string;
 
-	@Column("int")
+	@Column("int", { default: 0 })
 	update_count: number;
 
 	abstract setClassName(): void;
@@ -44,5 +44,13 @@ export abstract class Record extends BaseEntity {
 	@BeforeUpdate()
 	incrementUpdateCount() {
 		this.update_count++;
+	}
+
+	shallowCopy() {
+		console.log("Shallow copy called, not implemented");
+	}
+
+	copyWithRelations() {
+		console.log("Deep copy called, not implemented");
 	}
 }

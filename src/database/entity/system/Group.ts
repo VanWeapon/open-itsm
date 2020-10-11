@@ -10,7 +10,7 @@ import { Record } from "./Record";
 import { Role } from "./Role";
 import { User } from "./User";
 
-@Entity("s_group")
+@Entity("s_group", { schema: "system" })
 export class Group extends Record {
 	@BeforeInsert()
 	setClassName(): void {

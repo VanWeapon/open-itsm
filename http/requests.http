@@ -1,6 +1,6 @@
 
 ### GET All incident records
-GET http://localhost:3000/api/record/incident HTTP/1.1
+GET http://localhost:3000/api/record/task HTTP/1.1
 
 ### GET All incident records
 GET http://localhost:3000/api/record/task HTTP/1.1
@@ -55,12 +55,24 @@ Content-Type: application/json
 }
 
 ### Get Metadata for the incident table 
-GET http://localhost:3000/api/schema/incident HTTP/1.1
+GET http://localhost:3000/api/schema/s_dbo HTTP/1.1
 
 
 ### BAD Get Metadata for the request table 
 GET http://localhost:3000/api/schema/request HTTP/1.1
 
 
-### Get UI data for the incident table
-GET http://localhost:3000/api/ui/incident HTTP/1.1
+### Get UI data for the dbo table
+GET http://localhost:3000/api/ui/s_user HTTP/1.1
+
+
+### Get UI data for the task table
+GET http://localhost:3000/api/ui/task HTTP/1.1
+
+
+### Get UI data for the task table
+GET http://localhost:3000/api/ui/task HTTP/1.1
+
+
+### Get UI data for the task table
+GET http://localhost:3000/api/ui/task HTTP/1.1

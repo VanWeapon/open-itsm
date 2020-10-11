@@ -4,7 +4,7 @@ import { Table } from "./Table";
 import { Dictionary } from "./Dictionary";
 import { Role } from "./Role";
 
-@Entity("s_acl")
+@Entity("s_acl", { schema: "system" })
 export class AccessControl extends Record {
 	@BeforeInsert()
 	setClassName(): void {
@@ -29,4 +29,7 @@ export class AccessControl extends Record {
 
 	@Column("varchar", { length: 40 })
 	type: "record" | "field";
+
+	@Column("varchar", { length: 40 })
+	operation: "create" | "read" | "update" | "delete";
 }

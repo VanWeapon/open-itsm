@@ -3,7 +3,7 @@ import { Record } from "./Record";
 import { Table } from "./Table";
 import { Dictionary } from "./Dictionary";
 
-@Entity("s_field_label")
+@Entity("s_field_label", { schema: "system" })
 export class FieldLabel extends Record {
 	@BeforeInsert()
 	setClassName(): void {

@@ -2,7 +2,7 @@ import { Record } from "./Record";
 import { BeforeInsert, Entity, Column, ManyToMany, OneToMany } from "typeorm";
 import { AccessControl } from "./AccessControl";
 
-@Entity("s_role")
+@Entity("s_role", { schema: "system" })
 export class Role extends Record {
 	@BeforeInsert()
 	setClassName(): void {
