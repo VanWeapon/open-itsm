@@ -10,14 +10,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UIAPI = void 0;
+const typeorm_1 = require("typeorm");
 const Dictionary_1 = require("../../database/entity/system/Dictionary");
 const Table_1 = require("../../database/entity/system/Table");
 const UIAction_1 = require("../../database/entity/system/UIAction");
 class UIAPI {
-    static get(ctx, next, connection) {
+    static get(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const table = ctx.params.table;
             const property = ctx.params.property;
+            const connection = typeorm_1.getConnection(process.env.NODE_ENV);
             if (!table && !property) {
                 ctx.response.status = 400;
                 ctx.response.body = "Table and Property not provided in request";
@@ -55,19 +57,22 @@ class UIAPI {
             }
         });
     }
-    static post(_ctx, _next, connection) {
+    static post(_ctx, _next) {
         return __awaiter(this, void 0, void 0, function* () {
+            const connection = typeorm_1.getConnection(process.env.NODE_ENV);
             connection.getRepository(Table_1.Table);
         });
     }
-    static put(_ctx, next, connection) {
+    static put(_ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
+            const connection = typeorm_1.getConnection(process.env.NODE_ENV);
             connection.getRepository(Table_1.Table);
             yield next();
         });
     }
-    static delete(_ctx, next, connection) {
+    static delete(_ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
+            const connection = typeorm_1.getConnection(process.env.NODE_ENV);
             connection.getRepository(Table_1.Table);
             yield next();
         });

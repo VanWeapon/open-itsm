@@ -10,15 +10,15 @@ import { ParameterizedContext, Next } from "koa";
 import { IRouterParamContext } from "koa-router";
 import { execSync } from "child_process";
 import { EntityJSON, EntityGenerator } from "./EntityGenerator";
-import { Connection } from "typeorm";
+import { getConnection } from "typeorm";
 import { Table } from "../../database/entity/system/Table";
 // import { getConnectionOptions } from "typeorm";
 export class SchemaAPI {
 	public static async get(
 		ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
-		next: Next,
-		connection: Connection
+		next: Next
 	): Promise<void> {
+		const connection = getConnection(process.env.NODE_ENV);
 		const tableName = ctx.params.table || null;
 
 		try {
@@ -60,9 +60,10 @@ export class SchemaAPI {
 
 	public static async post(
 		ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
-		next: Next,
-		connection: Connection
+		next: Next
 	): Promise<void> {
+		const connection = getConnection(process.env.NODE_ENV);
+
 		connection.getRepository(Table);
 		const newEntity = ctx.request.body as EntityJSON;
 		const validEntityJSON = EntityGenerator.validateJSON(newEntity);
@@ -105,16 +106,18 @@ export class SchemaAPI {
 
 	public static async put(
 		_ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
-		_next: Next,
-		connection: Connection
+		_next: Next
 	): Promise<void> {
+		const connection = getConnection(process.env.NODE_ENV);
+
 		connection.getRepository(Table); // placeholder
 	}
 	public static async delete(
 		_ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
-		_next: Next,
-		connection: Connection
+		_next: Next
 	): Promise<void> {
+		const connection = getConnection(process.env.NODE_ENV);
+
 		connection.getRepository(Table); // placeholder
 	}
 }

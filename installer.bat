@@ -24,7 +24,7 @@ DEL /F /Q %RELPATH%dist\*
 
 
 @REM Compile and run migrations
-
+CALL tsc 
 CALL typeorm migration:generate -c development -n "init"
 CALL tsc 
 
@@ -34,10 +34,10 @@ CALL typeorm migration:run -c production
 
 
 SET NODE_ENV=development
-CALL ts-node ./src/database/data/LoadSystemData.ts
+CALL node ./dist/database/data/LoadSystemData.ts
 
 SET NODE_ENV=test
-CALL ts-node ./src/database/data/LoadSystemData.ts
+CALL node ./dist/database/data/LoadSystemData.ts
 
 SET NODE_ENV=production
 CALL node ./dist/database/data/LoadSystemData.ts

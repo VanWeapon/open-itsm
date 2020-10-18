@@ -1,5 +1,12 @@
 import { Record } from "./Record";
-import { BeforeInsert, Entity, Column, ManyToOne, AfterInsert } from "typeorm";
+import {
+	BeforeInsert,
+	Entity,
+	Column,
+	ManyToOne,
+	// AfterInsert,
+	getConnection,
+} from "typeorm";
 import { Table } from "./Table";
 import { FieldLabel } from "./FieldLabel";
 
@@ -49,14 +56,17 @@ export class Dictionary extends Record {
 	@Column("text", { nullable: true })
 	default_value: string;
 
-	@AfterInsert()
-	createDefaultLabel() {
-		const label = new FieldLabel();
+	// called via subscriber
+	async createDefaultLabel() {
+		const c = getConnection(process.env.NODE_ENV);
+		const repo = c.getRepository(FieldLabel);
+		const label = repo.create();
 		label.element = this;
 		label.label = this.column_label;
 		label.table = this.table;
 		label.created_by = this.created_by;
 		label.updated_by = this.updated_by;
-		label.save();
+
+		await repo.save(label);
 	}
 }

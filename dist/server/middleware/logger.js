@@ -14,7 +14,8 @@ function logger(ctx, next) {
     return __awaiter(this, void 0, void 0, function* () {
         yield next();
         const rt = ctx.response.get("X-Response-Time");
-        console.log(`${ctx.method} ${ctx.url} - ${rt}`);
+        if (process.env.NODE_ENV !== "test")
+            console.log(`${ctx.method} ${ctx.url} - ${rt}`);
     });
 }
 exports.logger = logger;

@@ -12,10 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SchemaAPI = void 0;
 const child_process_1 = require("child_process");
 const EntityGenerator_1 = require("./EntityGenerator");
+const typeorm_1 = require("typeorm");
 const Table_1 = require("../../database/entity/system/Table");
 class SchemaAPI {
-    static get(ctx, next, connection) {
+    static get(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
+            const connection = typeorm_1.getConnection(process.env.NODE_ENV);
             const tableName = ctx.params.table || null;
             try {
                 connection.getRepository(tableName);
@@ -55,8 +57,9 @@ class SchemaAPI {
             next();
         });
     }
-    static post(ctx, next, connection) {
+    static post(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
+            const connection = typeorm_1.getConnection(process.env.NODE_ENV);
             connection.getRepository(Table_1.Table);
             const newEntity = ctx.request.body;
             const validEntityJSON = EntityGenerator_1.EntityGenerator.validateJSON(newEntity);
@@ -78,13 +81,15 @@ class SchemaAPI {
             yield next();
         });
     }
-    static put(_ctx, _next, connection) {
+    static put(_ctx, _next) {
         return __awaiter(this, void 0, void 0, function* () {
+            const connection = typeorm_1.getConnection(process.env.NODE_ENV);
             connection.getRepository(Table_1.Table);
         });
     }
-    static delete(_ctx, _next, connection) {
+    static delete(_ctx, _next) {
         return __awaiter(this, void 0, void 0, function* () {
+            const connection = typeorm_1.getConnection(process.env.NODE_ENV);
             connection.getRepository(Table_1.Table);
         });
     }

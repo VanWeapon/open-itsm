@@ -16,10 +16,21 @@ export class RecordAPI {
 		ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
 		next: Next
 	) {
+		const connection = getConnection(process.env.NODE_ENV);
 		const tableName = ctx.params.table;
 		const id = ctx.params.id || null;
-		const repository = getConnection().getRepository(tableName);
+		let repository: Repository<any>;
+		try {
+			repository = connection.getRepository(tableName);
+		} catch (e) {
+			ctx.status = 404;
+			ctx.body = `Table name: ${tableName} does not exist`;
+			await next();
+			return;
+		}
 
+		const entityName = repository.metadata.name;
+		// console.log(`Connected to ${entityName} repo`);
 		if (id) {
 			try {
 				const record = await RecordAPI.getByID(id, repository);
@@ -28,15 +39,20 @@ export class RecordAPI {
 					ctx.body = record;
 					await next();
 					return;
+				} else {
+					ctx.status = 404;
+					ctx.body = "No " + entityName + " found with ID of " + id;
+					await next();
+					return;
 				}
 			} catch (e) {
-				ctx.status = 500;
-				ctx.body = e;
+				ctx.status = 400;
+				ctx.body = e.message;
 				await next();
 				return;
 			}
 		} else {
-			const records = repository.find();
+			const records = await repository.find();
 			if (records) {
 				ctx.status = 200;
 				ctx.body = records;

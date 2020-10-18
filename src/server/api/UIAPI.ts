@@ -1,6 +1,6 @@
 import { ParameterizedContext, Next } from "koa";
 import { IRouterParamContext } from "koa-router";
-import { Connection } from "typeorm";
+import { Connection, getConnection } from "typeorm";
 import { Dictionary } from "../../database/entity/system/Dictionary";
 import { Table } from "../../database/entity/system/Table";
 import { UIAction } from "../../database/entity/system/UIAction";
@@ -8,11 +8,11 @@ import { UIAction } from "../../database/entity/system/UIAction";
 export class UIAPI {
 	public static async get(
 		ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
-		next: Next,
-		connection: Connection
+		next: Next
 	): Promise<void> {
 		const table = ctx.params.table;
 		const property = ctx.params.property;
+		const connection = getConnection(process.env.NODE_ENV);
 
 		if (!table && !property) {
 			ctx.response.status = 400;
@@ -54,24 +54,27 @@ export class UIAPI {
 	}
 	public static async post(
 		_ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
-		_next: Next,
-		connection: Connection
+		_next: Next
 	): Promise<void> {
+		const connection = getConnection(process.env.NODE_ENV);
+
 		connection.getRepository(Table);
 	}
 	public static async put(
 		_ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
-		next: Next,
-		connection: Connection
+		next: Next
 	): Promise<void> {
+		const connection = getConnection(process.env.NODE_ENV);
+
 		connection.getRepository(Table);
 		await next();
 	}
 	public static async delete(
 		_ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
-		next: Next,
-		connection: Connection
+		next: Next
 	): Promise<void> {
+		const connection = getConnection(process.env.NODE_ENV);
+
 		connection.getRepository(Table);
 
 		await next();

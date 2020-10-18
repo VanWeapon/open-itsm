@@ -11,13 +11,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
 require("dotenv").config();
-const APIServer_1 = require("./server/APIServer");
+const app = require("./server/APIServer");
 const typeorm_1 = require("typeorm");
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("Starting...");
+    console.log("Creating db connection");
     const options = yield typeorm_1.getConnectionOptions(process.env.NODE_ENV);
-    const connection = yield typeorm_1.createConnection(Object.assign(Object.assign({}, options), { name: "default" }));
-    const app = yield APIServer_1.createServer(connection);
-    app.listen(3000);
+    const c = yield typeorm_1.createConnection(Object.assign(Object.assign({}, options), { name: process.env.NODE_ENV }));
+    console.log("Db connection created: " + c.isConnected + " " + c.name);
+    console.log("Starting server...");
+    const port = process.env.PORT || 3000;
+    app.listen(port);
+    console.log(`Server listening on ${port}`);
 });
 start();
 //# sourceMappingURL=index.js.map

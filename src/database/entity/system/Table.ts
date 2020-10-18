@@ -1,4 +1,4 @@
-import { Entity, Column, BeforeInsert, OneToMany, AfterInsert } from "typeorm";
+import { Entity, Column, BeforeInsert, getConnection } from "typeorm";
 import { Record } from "./Record";
 import { Dictionary } from "./Dictionary";
 
@@ -23,12 +23,12 @@ export class Table extends Record {
 	@Column("integer", { nullable: true })
 	number_digits: number;
 
-	@OneToMany(() => Dictionary, (dictionary) => dictionary.table)
-	dictionary_entries: Dictionary[];
+	// called via subscriber
+	async createDefaultDictionaries() {
+		const c = getConnection(process.env.NODE_ENV);
+		const repo = c.getRepository(Dictionary);
 
-	@AfterInsert()
-	createDefaultDictionaries() {
-		const guid = new Dictionary();
+		const guid = repo.create();
 		guid.active = true;
 		guid.column_name = "guid";
 		guid.column_label = "GUID";
@@ -36,9 +36,8 @@ export class Table extends Record {
 		guid.table = this;
 		guid.created_by = this.created_by;
 		guid.updated_by = this.updated_by;
-		guid.save();
 
-		const created_by = new Dictionary();
+		const created_by = repo.create();
 		created_by.active = true;
 		created_by.column_name = "created_by";
 		created_by.column_label = "Created By";
@@ -47,9 +46,8 @@ export class Table extends Record {
 		created_by.table = this;
 		created_by.created_by = this.created_by;
 		created_by.updated_by = this.updated_by;
-		created_by.save();
 
-		const updated_by = new Dictionary();
+		const updated_by = repo.create();
 		updated_by.active = true;
 		updated_by.column_name = "updated_by";
 		updated_by.column_label = "Updated By";
@@ -57,9 +55,8 @@ export class Table extends Record {
 		updated_by.table = this;
 		updated_by.created_by = this.created_by;
 		updated_by.updated_by = this.updated_by;
-		updated_by.save();
 
-		const created = new Dictionary();
+		const created = repo.create();
 		created.active = true;
 		created.column_name = "created";
 		created.column_label = "Created";
@@ -68,9 +65,8 @@ export class Table extends Record {
 		created.table = this;
 		created.created_by = this.created_by;
 		created.updated_by = this.updated_by;
-		created.save();
 
-		const updated = new Dictionary();
+		const updated = repo.create();
 		updated.active = true;
 		updated.column_name = "updated";
 		updated.column_label = "Updated";
@@ -78,9 +74,8 @@ export class Table extends Record {
 		updated.table = this;
 		updated.created_by = this.created_by;
 		updated.updated_by = this.updated_by;
-		updated.save();
 
-		const class_name = new Dictionary();
+		const class_name = repo.create();
 		class_name.active = true;
 		class_name.column_name = "class_name";
 		class_name.column_label = "Class Name";
@@ -88,9 +83,8 @@ export class Table extends Record {
 		class_name.table = this;
 		class_name.created_by = this.created_by;
 		class_name.updated_by = this.updated_by;
-		class_name.save();
 
-		const updated_count = new Dictionary();
+		const updated_count = repo.create();
 		updated_count.active = true;
 		updated_count.column_name = "updated_count";
 		updated_count.column_label = "Update count";
@@ -98,6 +92,17 @@ export class Table extends Record {
 		updated_count.table = this;
 		updated_count.created_by = this.created_by;
 		updated_count.updated_by = this.updated_by;
-		updated_count.save();
+
+		const entries = [
+			guid,
+			created_by,
+			updated_by,
+			created,
+			updated,
+			class_name,
+			updated_count,
+		];
+
+		await repo.save(entries);
 	}
 }

@@ -25,7 +25,7 @@
 		"username": "maint",
 		"database": "openitsm-test",
 		"synchronize": false,
-		"dropSchema": true,
+		"dropSchema": false,
 		"logging": true,
 		"entities": ["dist/database/entity/**/*.js"],
 		"migrations": ["dist/database/migration/**/*.js"],

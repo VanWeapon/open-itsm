@@ -14,9 +14,20 @@ const typeorm_1 = require("typeorm");
 class RecordAPI {
     static get(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
+            const connection = typeorm_1.getConnection(process.env.NODE_ENV);
             const tableName = ctx.params.table;
             const id = ctx.params.id || null;
-            const repository = typeorm_1.getConnection().getRepository(tableName);
+            let repository;
+            try {
+                repository = connection.getRepository(tableName);
+            }
+            catch (e) {
+                ctx.status = 404;
+                ctx.body = `Table name: ${tableName} does not exist`;
+                yield next();
+                return;
+            }
+            const entityName = repository.metadata.name;
             if (id) {
                 try {
                     const record = yield RecordAPI.getByID(id, repository);
@@ -26,16 +37,22 @@ class RecordAPI {
                         yield next();
                         return;
                     }
+                    else {
+                        ctx.status = 404;
+                        ctx.body = "No " + entityName + " found with ID of " + id;
+                        yield next();
+                        return;
+                    }
                 }
                 catch (e) {
-                    ctx.status = 500;
-                    ctx.body = e;
+                    ctx.status = 400;
+                    ctx.body = e.message;
                     yield next();
                     return;
                 }
             }
             else {
-                const records = repository.find();
+                const records = yield repository.find();
                 if (records) {
                     ctx.status = 200;
                     ctx.body = records;
