@@ -1,5 +1,4 @@
 import { ColumnType } from "typeorm/driver/types/ColumnTypes";
-import * as fsp from "fs/promises";
 import * as fs from "fs";
 export type EntityJSON = {
 	name: string;
@@ -107,7 +106,12 @@ export class EntityGenerator {
 		}
 
 		let result = true;
-		await fsp.writeFile(filePath, scriptStr).catch(() => (result = false));
+		try {
+			fs.writeFileSync(filePath, scriptStr);
+		} catch (error) {
+			result = false;
+			console.log(error);
+		}
 
 		return result;
 	}

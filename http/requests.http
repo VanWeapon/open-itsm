@@ -1,6 +1,6 @@
 
 ### GET All incident records
-GET http://localhost:3000/api/record/task HTTP/1.1
+GET http://localhost:3000/api/record/s_user HTTP/1.1
 
 ### GET All incident records
 GET http://localhost:3000/api/record/task HTTP/1.1

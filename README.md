@@ -32,9 +32,11 @@ This way, all source code for UI Rendering is shareable to some extent across al
 
 You will need to have PostgreSQL installed on the machine you are running this.
 
-Then you can create a database named `openitsm` to start using this. Create a user named `maint` and give it full access to the database.
+Then you can create 3 databases, named `openitsm-dev`, `openitsm-test` and `openitsm` to start using this. Create a user named `maint` and give it full access to these databases.
 
-You can use the `CreateDB.sql` and `Schema.sql` files to kick-start this if you want, but right now there isnt much there. You will still need to create the `maint` user manually.
+Create 3 schemas for each database `core`, `system`, and `itsm`. Public can be left alone.
+
+I am working on SQL files to do this part automatically but not much is there yet. You will still need to create the `maint` user manually.
 
 Make sure to update the `.env` file with the appropriate settings once done, you decide your own credentials.
 
@@ -53,6 +55,32 @@ cd open-itsm
 npm install
 #Launch the API server
 npm run start
+```
+
+### API reference
+
+```sh
+# RECORDs
+# GET all records for a table
+http://localhost:3000/api/record/{tableName}
+# GET a single record
+http://localhost:3000/api/record/{tableName}/{recordID}
+
+# UI Elements
+# GET all UI elements for a table
+http://localhost:3000/api/ui/{tableName}
+# GET form elements for a table
+http://localhost:3000/api/ui/{tableName}/form
+# GET list elements for a table
+http://localhost:3000/api/ui/{tableName}/list
+# GET button elements for a table
+http://localhost:3000/api/ui/{tableName}/actions
+
+# SCHEMA details
+# GET table column metadata
+http://localhost:3000/api/schema/{tableName}
+# GET single column metadata
+http://localhost:3000/api/schema/{tableName}/{columnName}
 ```
 
 # Feature list

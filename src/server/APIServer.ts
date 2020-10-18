@@ -9,7 +9,7 @@ import { SchemaAPI } from "./api/SchemaAPI";
 import { UIAPI } from "./api/UIAPI";
 import { Connection } from "typeorm";
 
-export async function startServer(connection: Connection) {
+export async function createServer(connection: Connection) {
 	const app = new Koa();
 	const router = new Router();
 
@@ -95,6 +95,5 @@ export async function startServer(connection: Connection) {
 		await UIAPI.delete(ctx, next, connection);
 	});
 
-	app.listen(3000);
-	console.log("Server Started");
+	return app;
 }
