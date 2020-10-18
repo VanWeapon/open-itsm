@@ -2,11 +2,11 @@ import { Entity, Column, BeforeInsert, OneToMany, AfterInsert } from "typeorm";
 import { Record } from "./Record";
 import { Dictionary } from "./Dictionary";
 
-@Entity("s_dbo", { schema: "system" })
+@Entity("dbo", { schema: "system" })
 export class Table extends Record {
 	@BeforeInsert()
 	setClassName(): void {
-		this.class_name = "s_dbo";
+		this.class_name = "dbo";
 	}
 
 	@Column("varchar", { length: 80, unique: true })

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.startServer = void 0;
+exports.createServer = void 0;
 const Koa = require("koa");
 const Router = require("koa-router");
 const bodyParser = require("koa-bodyparser");
@@ -18,7 +18,7 @@ const RecordAPI_1 = require("./api/RecordAPI");
 const responsetime_1 = require("./middleware/responsetime");
 const SchemaAPI_1 = require("./api/SchemaAPI");
 const UIAPI_1 = require("./api/UIAPI");
-function startServer(_connection) {
+function createServer(connection) {
     return __awaiter(this, void 0, void 0, function* () {
         const app = new Koa();
         const router = new Router();
@@ -40,35 +40,34 @@ function startServer(_connection) {
             yield RecordAPI_1.RecordAPI.delete(ctx, next);
         }));
         router.get("/api/schema/:table", (ctx, next) => __awaiter(this, void 0, void 0, function* () {
-            yield SchemaAPI_1.SchemaAPI.get(ctx, next);
+            yield SchemaAPI_1.SchemaAPI.get(ctx, next, connection);
         }));
         router.post("/api/schema", (ctx, next) => __awaiter(this, void 0, void 0, function* () {
-            yield SchemaAPI_1.SchemaAPI.post(ctx, next);
+            yield SchemaAPI_1.SchemaAPI.post(ctx, next, connection);
         }));
         router.put("/api/schema/:table/:id", (ctx, next) => __awaiter(this, void 0, void 0, function* () {
-            yield SchemaAPI_1.SchemaAPI.put(ctx, next);
+            yield SchemaAPI_1.SchemaAPI.put(ctx, next, connection);
         }));
         router.delete("/api/schema/:table/:id", (ctx, next) => __awaiter(this, void 0, void 0, function* () {
-            yield SchemaAPI_1.SchemaAPI.delete(ctx, next);
+            yield SchemaAPI_1.SchemaAPI.delete(ctx, next, connection);
         }));
         router.get("/api/ui/:table", (ctx, next) => __awaiter(this, void 0, void 0, function* () {
-            yield UIAPI_1.UIAPI.get(ctx, next);
+            yield UIAPI_1.UIAPI.get(ctx, next, connection);
         }));
         router.get("/api/ui/:table/:property", (ctx, next) => __awaiter(this, void 0, void 0, function* () {
-            yield UIAPI_1.UIAPI.get(ctx, next);
+            yield UIAPI_1.UIAPI.get(ctx, next, connection);
         }));
         router.post("/api/ui/:table/:property", (ctx, next) => __awaiter(this, void 0, void 0, function* () {
-            yield UIAPI_1.UIAPI.post(ctx, next);
+            yield UIAPI_1.UIAPI.post(ctx, next, connection);
         }));
         router.put("/api/ui/:table/:property", (ctx, next) => __awaiter(this, void 0, void 0, function* () {
-            yield UIAPI_1.UIAPI.put(ctx, next);
+            yield UIAPI_1.UIAPI.put(ctx, next, connection);
         }));
         router.delete("/api/ui/:table/:property", (ctx, next) => __awaiter(this, void 0, void 0, function* () {
-            yield UIAPI_1.UIAPI.delete(ctx, next);
+            yield UIAPI_1.UIAPI.delete(ctx, next, connection);
         }));
-        app.listen(3000);
-        console.log("Server Started");
+        return app;
     });
 }
-exports.startServer = startServer;
+exports.createServer = createServer;
 //# sourceMappingURL=APIServer.js.map

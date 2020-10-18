@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntityGenerator = void 0;
-const fsp = require("fs/promises");
 const fs = require("fs");
 class EntityGenerator {
     static validateJSON(newEntity) {
@@ -95,7 +94,13 @@ class EntityGenerator {
                 scriptStr = extendsImport + scriptStr;
             }
             let result = true;
-            yield fsp.writeFile(filePath, scriptStr).catch(() => (result = false));
+            try {
+                fs.writeFileSync(filePath, scriptStr);
+            }
+            catch (error) {
+                result = false;
+                console.log(error);
+            }
             return result;
         });
     }

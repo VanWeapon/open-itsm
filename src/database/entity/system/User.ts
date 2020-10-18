@@ -6,25 +6,21 @@ import {
 	JoinTable,
 	ManyToOne,
 } from "typeorm";
-import { Company } from "../core/Company";
 import { Department } from "../core/Department";
 import { Record } from "./Record";
 import { Role } from "./Role";
 
-@Entity("s_user", { schema: "system" })
+@Entity("user", { schema: "system" })
 export class User extends Record {
 	@BeforeInsert()
 	setClassName(): void {
-		this.class_name = "s_user";
+		this.class_name = "user";
 	}
 	@Column("varchar", { length: 40, nullable: false, unique: true })
 	user_name: string;
 
 	@Column("varchar", { length: 127 })
 	first_name: string;
-
-	@ManyToOne(() => Company)
-	company: Company;
 
 	@ManyToOne(() => Department)
 	department: Department;
@@ -50,6 +46,6 @@ export class User extends Record {
 	}
 
 	@ManyToMany(() => Role)
-	@JoinTable({ name: "s_user_has_role" })
+	@JoinTable({ name: "user_has_role" })
 	user_roles: Role[];
 }

@@ -4,11 +4,11 @@ import { Table } from "./Table";
 import { Dictionary } from "./Dictionary";
 import { Role } from "./Role";
 
-@Entity("s_acl", { schema: "system" })
+@Entity("acl", { schema: "system" })
 export class AccessControl extends Record {
 	@BeforeInsert()
 	setClassName(): void {
-		this.class_name = "s_acl";
+		this.class_name = "acl";
 	}
 
 	@Column("boolean", { default: true }) active: boolean;
@@ -22,7 +22,7 @@ export class AccessControl extends Record {
 	})
 	field: Dictionary;
 
-	@ManyToMany(() => Role, (roles) => roles.s_acl_requires_role, {
+	@ManyToMany(() => Role, (roles) => roles.acl_requires_role, {
 		nullable: false,
 	})
 	requires_role: Role[];

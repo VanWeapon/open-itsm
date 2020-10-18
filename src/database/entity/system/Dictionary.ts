@@ -3,11 +3,11 @@ import { BeforeInsert, Entity, Column, ManyToOne, AfterInsert } from "typeorm";
 import { Table } from "./Table";
 import { FieldLabel } from "./FieldLabel";
 
-@Entity("s_dictionary", { schema: "system" })
+@Entity("dictionary", { schema: "system" })
 export class Dictionary extends Record {
 	@BeforeInsert()
 	setClassName(): void {
-		this.class_name = "s_dictionary";
+		this.class_name = "dictionary";
 	}
 
 	@Column("boolean", { default: false })

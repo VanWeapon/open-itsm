@@ -10,11 +10,11 @@ import { Record } from "./Record";
 import { Role } from "./Role";
 import { User } from "./User";
 
-@Entity("s_group", { schema: "system" })
+@Entity("group", { schema: "system" })
 export class Group extends Record {
 	@BeforeInsert()
 	setClassName(): void {
-		this.class_name = "s_group";
+		this.class_name = "group";
 	}
 
 	@Column("varchar", { length: 255, nullable: false })
@@ -27,10 +27,10 @@ export class Group extends Record {
 	manager: User;
 
 	@ManyToMany(() => User)
-	@JoinTable({ name: "s_group_membership" })
+	@JoinTable({ name: "group_membership" })
 	group_members: User[];
 
 	@ManyToMany(() => Role)
-	@JoinTable({ name: "s_group_contains_role" })
+	@JoinTable({ name: "group_contains_role" })
 	contains_roles: Role[];
 }

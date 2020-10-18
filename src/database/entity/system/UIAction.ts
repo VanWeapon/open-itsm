@@ -10,11 +10,11 @@ import { Record } from "./Record";
 import { Role } from "./Role";
 import { Table } from "./Table";
 
-@Entity("s_ui_action", { schema: "system" })
+@Entity("ui_action", { schema: "system" })
 export class UIAction extends Record {
 	@BeforeInsert()
 	setClassName() {
-		this.class_name = "s_ui_action";
+		this.class_name = "ui_action";
 	}
 
 	@Column("varchar", { length: 255 })
@@ -69,6 +69,6 @@ export class UIAction extends Record {
 	server_script: string;
 
 	@ManyToMany(() => Role, { nullable: true })
-	@JoinTable({ name: "s_ui_action_requires_role" })
+	@JoinTable({ name: "ui_action_requires_role" })
 	requires_role: Role[];
 }

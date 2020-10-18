@@ -8,19 +8,17 @@
 	},
 	"scripts": {
 		"start": "SET NODE_ENV=development&& ts-node src/index.ts",
-		"compile": "tsc -w",
+		"watch": "tsc -w",
 		"nodemon": "SET NODE_ENV=development&& nodemon src/index.ts",
 		"test": "SET NODE_ENV=test&& jest",
 		"test-server": "SET NODE_ENV=test&& ts-node src/index.ts",
-		"drop-dev": "ts-node ./node_modules/typeorm/cli.js schema:drop -c \"development\"",
-		"drop-test": "ts-node ./node_modules/typeorm/cli.js schema:drop -c \"test\"",
-		"clean-dev": "bash rm -rf src/database/migration/*",
-		"migration-gen-dev": "ts-node ./node_modules/typeorm/cli.js migration:generate -c \"development\" -n",
-		"migration-run-dev": "ts-node ./node_modules/typeorm/cli.js migration:run -c \"development\"",
-		"migration-gen-test": "ts-node ./node_modules/typeorm/cli.js migration:generate -c \"test\" -n",
-		"migration-run-test": "ts-node ./node_modules/typeorm/cli.js migration:run -c \"test\"",
-		"migration-gen-prod": "typeorm migration:generate -c default -n",
-		"migration-run-prod": "typeorm migration:run -c default"
+		"drop:dev": "ts-node ./node_modules/typeorm/cli.js schema:drop -c \"development\"",
+		"drop:test": "ts-node ./node_modules/typeorm/cli.js schema:drop -c \"test\"",
+		"clean:migrations": "rm -rf ./src/database/migration/*&&rm -rf ./dist/database/migration/*",
+		"migration:gen": "tsc&&typeorm migration:generate -c development -n default",
+		"migration:run:dev": "typeorm migration:run -c development",
+		"migration:run:test": "typeorm migration:run -c test",
+		"migration:run:prod": "typeorm migration:run -c production"
 	},
 	"repository": {
 		"type": "git",

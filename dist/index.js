@@ -16,7 +16,8 @@ const typeorm_1 = require("typeorm");
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     const options = yield typeorm_1.getConnectionOptions(process.env.NODE_ENV);
     const connection = yield typeorm_1.createConnection(Object.assign(Object.assign({}, options), { name: "default" }));
-    APIServer_1.startServer(connection);
+    const app = yield APIServer_1.createServer(connection);
+    app.listen(3000);
 });
 start();
 //# sourceMappingURL=index.js.map

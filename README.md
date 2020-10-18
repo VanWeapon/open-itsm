@@ -38,6 +38,10 @@ Create 3 schemas for each database `core`, `system`, and `itsm`. Public can be l
 
 I am working on SQL files to do this part automatically but not much is there yet. You will still need to create the `maint` user manually.
 
+#### PGPass File
+
+You need a `pgpass.conf` (windows) or `.pgpass` (unix) file which will store the username/password combos for the maint user. See the docs for this
+
 Make sure to update the `.env` file with the appropriate settings once done, you decide your own credentials.
 
 ### OpenITSM API Server

@@ -12,21 +12,52 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SchemaAPI = void 0;
 const child_process_1 = require("child_process");
 const EntityGenerator_1 = require("./EntityGenerator");
+const Table_1 = require("../../database/entity/system/Table");
 class SchemaAPI {
-    static get(ctx, next) {
+    static get(ctx, next, connection) {
         return __awaiter(this, void 0, void 0, function* () {
             const tableName = ctx.params.table || null;
+            try {
+                connection.getRepository(tableName);
+            }
+            catch (error) {
+                if (error.name === "RepositoryNotFoundError") {
+                    ctx.status = 404;
+                    ctx.body = `Table ${tableName} not found`;
+                }
+                else {
+                    console.log(error);
+                    ctx.status = 400;
+                    ctx.body = error;
+                }
+                yield next();
+                return;
+            }
             if (!tableName) {
                 ctx.status = 400;
                 ctx.body = "No table name provided";
                 yield next();
                 return;
             }
+            else {
+                const meta = connection.getRepository(tableName).metadata.columns;
+                const columns = [];
+                meta.forEach((metaColumn) => {
+                    columns.push({
+                        column_name: metaColumn.propertyName,
+                        type: metaColumn.type,
+                        db_name: metaColumn.databaseName,
+                    });
+                });
+                ctx.status = 200;
+                ctx.body = columns;
+            }
             next();
         });
     }
-    static post(ctx, next) {
+    static post(ctx, next, connection) {
         return __awaiter(this, void 0, void 0, function* () {
+            connection.getRepository(Table_1.Table);
             const newEntity = ctx.request.body;
             const validEntityJSON = EntityGenerator_1.EntityGenerator.validateJSON(newEntity);
             if (!validEntityJSON) {
@@ -47,11 +78,15 @@ class SchemaAPI {
             yield next();
         });
     }
-    static put(_ctx, _next) {
-        return __awaiter(this, void 0, void 0, function* () { });
+    static put(_ctx, _next, connection) {
+        return __awaiter(this, void 0, void 0, function* () {
+            connection.getRepository(Table_1.Table);
+        });
     }
-    static delete(_ctx, _next) {
-        return __awaiter(this, void 0, void 0, function* () { });
+    static delete(_ctx, _next, connection) {
+        return __awaiter(this, void 0, void 0, function* () {
+            connection.getRepository(Table_1.Table);
+        });
     }
 }
 exports.SchemaAPI = SchemaAPI;

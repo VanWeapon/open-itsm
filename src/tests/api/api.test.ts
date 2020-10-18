@@ -12,7 +12,7 @@ it("connects to server", async () => {
 	console.log("Connecting to app");
 	const app = await createServer(getConnection(process.env.NODE_ENV));
 	console.log("Supertest request...");
-	const result = await request(app).get("/api/record/s_user");
+	const result = await request(app).get("/api/record/user");
 	console.log(result);
 
 	expect(result).not.toBeNull();
