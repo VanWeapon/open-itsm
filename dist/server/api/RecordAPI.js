@@ -80,9 +80,35 @@ class RecordAPI {
             }
         });
     }
-    static post(_ctx, next) {
+    static post(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield next();
+            const tableName = ctx.params.table;
+            const connection = yield typeorm_1.getConnection(process.env.NODE_ENV);
+            let repository;
+            try {
+                repository = connection.getRepository(tableName);
+            }
+            catch (e) {
+                ctx.response.status = 404;
+                ctx.response.body = `Table with name ${tableName} does not exits`;
+                yield next();
+                return;
+            }
+            try {
+                const record = repository.create(Object.assign({}, ctx.request.body));
+                record.created_by =
+                    ctx.req.headers["x-user"] || "nouser";
+                const inserted = yield repository.save(record);
+                ctx.response.status = 201;
+                ctx.response.body = inserted;
+            }
+            catch (e) {
+                ctx.response.status = 400;
+                ctx.response.body = "Invalid fields: " + e;
+            }
+            finally {
+                yield next();
+            }
         });
     }
     static put(_ctx, next) {

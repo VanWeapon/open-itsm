@@ -34,11 +34,11 @@ CALL typeorm migration:run -c production
 
 
 SET NODE_ENV=development
-CALL node ./dist/database/data/LoadSystemData.ts
+CALL node ./dist/database/data/LoadAll.ts
 
 SET NODE_ENV=test
-CALL node ./dist/database/data/LoadSystemData.ts
+CALL node ./dist/database/data/LoadAll.ts
 
 SET NODE_ENV=production
-CALL node ./dist/database/data/LoadSystemData.ts
+CALL node ./dist/database/data/LoadAll.ts
 

@@ -1,4 +1,5 @@
 import { BeforeInsert, Column, Entity, ManyToOne } from "typeorm";
+import { ConfigurationItem } from "../cmdb/ConfigurationItem";
 import { Group } from "../system/Group";
 import { Record } from "../system/Record";
 import { User } from "../system/User";
@@ -12,26 +13,30 @@ export class Task extends Record {
 
 	@Column("varchar", {
 		length: 255,
-		nullable: false,
 		default: "",
 	})
 	summary: string;
 
 	@Column("text", {
-		nullable: false,
 		default: "",
 	})
 	details: string;
 
-	@ManyToOne(() => User)
+	@Column("int", { default: 4 })
+	priority: 1 | 2 | 3 | 4 | 5;
+
+	@ManyToOne(() => User, { nullable: true })
 	assignee: User;
 
-	@ManyToOne(() => Group)
+	@ManyToOne(() => Group, { nullable: true })
 	assignment_group: Group;
 
-	@ManyToOne(() => User)
+	@ManyToOne(() => User, { nullable: true })
 	authorised_contact: User;
 
 	@ManyToOne(() => Task, { nullable: true })
 	parent_task: Task;
+
+	@ManyToOne(() => ConfigurationItem, { nullable: true })
+	config_item: ConfigurationItem;
 }

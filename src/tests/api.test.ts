@@ -1,23 +1,20 @@
-import { createConnection, getConnection, getConnectionOptions } from "typeorm";
-import * as app from "../../server/APIServer";
+import * as app from "../server/APIServer";
 import * as request from "supertest";
 import * as http from "http";
 import { v4 } from "uuid";
+
+jest.setTimeout(20000);
 beforeAll(async (done) => {
-	console.log("Connecting to db");
-	const opts = await getConnectionOptions(process.env.NODE_ENV);
-	await createConnection({ ...opts, logging: false });
 	done();
 });
 
 afterAll(async (done) => {
-	const c = getConnection(process.env.NODE_ENV);
-	await c.close();
 	done();
 });
 
 describe("Record Endpoint", () => {
 	const apptest = request(http.createServer(app.callback()));
+
 	it("connects to server", async () => {
 		const response = await apptest.get("/api/record/user");
 		expect(response.status).toBe(200);
@@ -57,5 +54,44 @@ describe("Record Endpoint", () => {
 	it("Fails on missing record ", async () => {
 		const uuid = v4();
 		await apptest.get(`/api/record/user/${uuid}`).expect(404);
+	});
+
+	it("gets child records in a parent table query", async () => {
+		const testHw = {} as any;
+		const testComp = {} as any;
+
+		testHw.name = "Supertest hw";
+		testHw.comments = "From supertest";
+		testHw.serial_number = "hw456";
+		testHw.environment = "test";
+
+		testComp.name = "Supertest computer";
+		testComp.comments = "From supertest";
+		testComp.serial_number = "pc123";
+		testComp.os = "win10";
+		testComp.environment = "test";
+
+		await apptest
+			.post("/api/record/cmdb_hw")
+			.set({ "X-User": "tester" })
+			.send(testHw)
+			.then((response) => {
+				console.log(response.error);
+				console.log(response.body);
+			});
+
+		await apptest
+			.post("/api/record/cmdb_hw_computer")
+			.set({ "X-User": "tester" })
+			.send(testComp)
+			.then((response) => {
+				console.log(response.error);
+				console.log(response.body);
+			});
+
+		await apptest.get("/api/record/cmdb_hw").then((response) => {
+			console.log(response.error);
+			console.log(response.body);
+		});
 	});
 });

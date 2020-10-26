@@ -11,6 +11,6 @@ export class Company extends Record {
 	@Column("varchar", { length: 80 })
 	name: string;
 
-	@Column("text")
+	@Column("text", { default: "" })
 	description: string;
 }

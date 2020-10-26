@@ -6,6 +6,7 @@ import {
 	JoinTable,
 	ManyToOne,
 } from "typeorm";
+import { Company } from "../core/Company";
 import { Department } from "../core/Department";
 import { Record } from "./Record";
 import { Role } from "./Role";
@@ -24,6 +25,9 @@ export class User extends Record {
 
 	@ManyToOne(() => Department)
 	department: Department;
+
+	@ManyToOne(() => Company)
+	company: Company;
 
 	@Column("varchar", { length: 127 })
 	last_name: string;

@@ -1,6 +1,7 @@
 import { ParameterizedContext, Next } from "koa";
 import { IRouterParamContext } from "koa-router";
 import { getConnection, Repository } from "typeorm";
+import { Record } from "../../database/entity/system/Record";
 
 /**
  * RecordAPI
@@ -82,10 +83,38 @@ export class RecordAPI {
 	}
 
 	public static async post(
-		_ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
+		ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
 		next: Next
 	) {
-		await next();
+		const tableName = ctx.params.table;
+
+		const connection = await getConnection(process.env.NODE_ENV);
+		let repository: Repository<Record>;
+		try {
+			repository = connection.getRepository(tableName);
+		} catch (e) {
+			ctx.response.status = 404;
+			ctx.response.body = `Table with name ${tableName} does not exits`;
+			await next();
+			return;
+		}
+
+		try {
+			const record = repository.create({
+				...(ctx.request.body as object),
+			})!;
+			record.created_by =
+				(ctx.req.headers["x-user"] as string) || "nouser";
+
+			const inserted = await repository.save(record);
+			ctx.response.status = 201;
+			ctx.response.body = inserted;
+		} catch (e) {
+			ctx.response.status = 400;
+			ctx.response.body = "Invalid fields: " + e;
+		} finally {
+			await next();
+		}
 	}
 
 	public static async put(

@@ -1,6 +1,7 @@
 import { BeforeInsert, Column, Entity, ManyToOne } from "typeorm";
 import { Record } from "../system/Record";
 import { User } from "../system/User";
+import { Department } from "./Department";
 
 @Entity("cost_centre", { schema: "core" })
 export class CostCentre extends Record {
@@ -12,7 +13,7 @@ export class CostCentre extends Record {
 	@Column("varchar", { length: 255 })
 	name: string;
 
-	@Column("text")
+	@Column("text", { default: "" })
 	description: string;
 
 	@Column("varchar", { length: 255, default: "" })
@@ -20,4 +21,7 @@ export class CostCentre extends Record {
 
 	@ManyToOne(() => User, { nullable: true })
 	centre_head: User;
+
+	@ManyToOne(() => Department, { nullable: true })
+	department: Department;
 }

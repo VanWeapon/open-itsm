@@ -1,7 +1,7 @@
 import "reflect-metadata";
 // tslint:disable-next-line: no-var-requires
 require("dotenv").config();
-import { createConnection, getConnectionOptions } from "typeorm";
+import { getConnection } from "typeorm";
 import { AccessControl } from "../entity/system/AccessControl";
 import { Dictionary } from "../entity/system/Dictionary";
 import { Group } from "../entity/system/Group";
@@ -14,25 +14,13 @@ import { User } from "../entity/system/User";
  * Create data for all the tables in the system schema
  * Roles/acls etc for non-system schemas will be created in separate load scripts
  */
-const start = async () => {
+export const loadSystemData = async () => {
 	console.log(`Current execution environment: ${process.env.NODE_ENV}`);
-	const options = await getConnectionOptions(process.env.NODE_ENV);
-	const connection = await createConnection({
-		...options,
-		name: process.env.NODE_ENV,
-	});
+	const connection = getConnection(process.env.NODE_ENV);
+
 	console.log(`Connection name: ${connection.name}`);
 	const created_by = "admin";
 	const updated_by = "admin";
-	await connection.query("TRUNCATE system.acl CASCADE");
-	await connection.query("TRUNCATE system.dictionary CASCADE");
-	await connection.query("TRUNCATE system.field_label CASCADE");
-	await connection.query("TRUNCATE system.group CASCADE");
-	await connection.query("TRUNCATE system.role CASCADE");
-	await connection.query("TRUNCATE system.server_script CASCADE");
-	await connection.query("TRUNCATE system.dbo CASCADE");
-	await connection.query("TRUNCATE system.ui_action CASCADE");
-	await connection.query("TRUNCATE system.user CASCADE");
 
 	/**
 	 * @TABLES
@@ -503,7 +491,9 @@ const start = async () => {
 			}
 
 			const name = column.propertyName;
-			const label = name.charAt(0).toUpperCase() + name.substring(1);
+			const label = (
+				name.charAt(0).toUpperCase() + name.substring(1)
+			).replace("_", " ");
 			const dictionary = connection.getRepository(Dictionary).create({
 				active: true,
 				created_by,
@@ -517,8 +507,4 @@ const start = async () => {
 		});
 	});
 	await connection.getRepository(Dictionary).save(dictionaries);
-
-	// await connection.close();
 };
-
-start();

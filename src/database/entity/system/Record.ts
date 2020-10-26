@@ -5,6 +5,7 @@ import {
 	PrimaryGeneratedColumn,
 	BeforeUpdate,
 	BaseEntity,
+	BeforeInsert,
 } from "typeorm";
 
 /**
@@ -39,11 +40,19 @@ export abstract class Record extends BaseEntity {
 	@Column("int", { default: 0 })
 	update_count: number;
 
+	@Column("boolean", { default: true })
+	active: boolean;
+
 	abstract setClassName(): void;
 
 	@BeforeUpdate()
 	incrementUpdateCount() {
 		this.update_count++;
+	}
+
+	@BeforeInsert()
+	setUpdatedBy() {
+		if (!this.updated_by) this.updated_by = this.created_by;
 	}
 
 	shallowCopy() {

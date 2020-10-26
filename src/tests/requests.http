@@ -1,6 +1,6 @@
 
 ### GET All incident records
-GET http://localhost:3000/api/record/user HTTP/1.1
+GET http://localhost:3000/api/record/cmdb_hw HTTP/1.1
 
 ### GET All incident records
 GET http://localhost:3000/api/record/user/643f70bd-4db1-4df7-9c1f-dd8c5e7f2c80 HTTP/1.1
