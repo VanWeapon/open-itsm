@@ -61,10 +61,6 @@ class EntityGenerator {
                             decorator = `@Column("text")`;
                             JStype = "string";
                             break;
-                        case "varchar":
-                            decorator = `@Column("varchar", {length: ${column.length}})`;
-                            JStype = "string";
-                            break;
                         case "int":
                             decorator = `@Column("int")`;
                             JStype = "number";
@@ -77,15 +73,15 @@ class EntityGenerator {
             }
             let scriptStr = `import { Entity, Column, BeforeInsert } from "typeorm";
 
-		@Entity("${newEntity.name}")
-		export class ${newEntity.label} extends ${((_c = newEntity.extends) === null || _c === void 0 ? void 0 : _c.label) || "Record"} {
-			@BeforeInsert()
-			setClassName(): void {
-				this.class_name = "${newEntity.name}"
-			}
+@Entity("${newEntity.name}", {schema: "${newEntity.schema}"})
+export class ${newEntity.label} extends ${((_c = newEntity.extends) === null || _c === void 0 ? void 0 : _c.label) || "Record"} {
+	@BeforeInsert()
+	setClassName(): void {
+		this.class_name = "${newEntity.name}"
+	}
 
-			${columnStr}
-		}`;
+	${columnStr}
+}`;
             if (newEntity.extends) {
                 scriptStr = extendsImport + scriptStr;
             }

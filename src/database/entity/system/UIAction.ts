@@ -1,30 +1,17 @@
-import {
-	BeforeInsert,
-	Column,
-	Entity,
-	JoinTable,
-	ManyToMany,
-	ManyToOne,
-} from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany } from "typeorm";
 import { Record } from "./Record";
 import { Role } from "./Role";
-import { Table } from "./Table";
 
 @Entity("ui_action", { schema: "system" })
 export class UIAction extends Record {
-	@BeforeInsert()
-	setClassName() {
-		this.class_name = "ui_action";
-	}
-
-	@Column("varchar", { length: 255 })
+	@Column("text")
 	name: string;
 
 	@Column("boolean", { default: true })
 	active: boolean;
 
-	@ManyToOne(() => Table, { nullable: true })
-	table: Table;
+	@Column("text", { default: "global" })
+	table: string;
 
 	@Column("boolean", { default: false })
 	global: boolean;

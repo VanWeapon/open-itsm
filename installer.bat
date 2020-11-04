@@ -19,8 +19,8 @@ psql -f "./setup.sql" -d openitsm-test -p %pgport% -U maint
 psql -f "./setup.sql" -d openitsm -p %pgport% -U maint
 
 @REM Clean up the migrations folder
-DEL /F /Q %RELPATH%src\database\migration\*
-DEL /F /Q %RELPATH%dist\*
+DEL /F /Q /S %RELPATH%\src\database\migration\*.*
+DEL /F /Q /S %RELPATH%\dist\*.*
 
 
 @REM Compile and run migrations
@@ -34,11 +34,11 @@ CALL typeorm migration:run -c production
 
 
 SET NODE_ENV=development
-CALL node ./dist/database/data/LoadAll.ts
+CALL node ./dist/database/data/LoadAll.js
 
 SET NODE_ENV=test
-CALL node ./dist/database/data/LoadAll.ts
+CALL node ./dist/database/data/LoadAll.js
 
 SET NODE_ENV=production
-CALL node ./dist/database/data/LoadAll.ts
+CALL node ./dist/database/data/LoadAll.js
 

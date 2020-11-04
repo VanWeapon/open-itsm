@@ -1,18 +1,11 @@
-import { BeforeInsert, Column, Entity, ManyToOne } from "typeorm";
-import { ConfigurationItem } from "../cmdb/ConfigurationItem";
+import { Column, Entity, ManyToOne } from "typeorm";
 import { Group } from "../system/Group";
 import { Record } from "../system/Record";
 import { User } from "../system/User";
 
 @Entity("task", { schema: "core" })
-export class Task extends Record {
-	@BeforeInsert()
-	setClassName(): void {
-		this.class_name = "task";
-	}
-
-	@Column("varchar", {
-		length: 255,
+export abstract class Task extends Record {
+	@Column("text", {
 		default: "",
 	})
 	summary: string;
@@ -33,10 +26,4 @@ export class Task extends Record {
 
 	@ManyToOne(() => User, { nullable: true })
 	authorised_contact: User;
-
-	@ManyToOne(() => Task, { nullable: true })
-	parent_task: Task;
-
-	@ManyToOne(() => ConfigurationItem, { nullable: true })
-	config_item: ConfigurationItem;
 }

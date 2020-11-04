@@ -1,13 +1,8 @@
-import { BeforeInsert, Column, Entity } from "typeorm";
-import { Task } from "../core/Task";
+import { ChildEntity, Column } from "typeorm";
+import { ITSMTask } from "./ITSMTask";
 
-@Entity("change", { schema: "itsm" })
-export class Change extends Task {
-	@BeforeInsert()
-	setClassName() {
-		this.class_name = "change";
-	}
-
+@ChildEntity("change")
+export class Change extends ITSMTask {
 	@Column("date", { nullable: true })
 	planned_start: Date;
 

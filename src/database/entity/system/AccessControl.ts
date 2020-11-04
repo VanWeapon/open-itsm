@@ -1,27 +1,14 @@
-import {
-	Entity,
-	BeforeInsert,
-	Column,
-	ManyToOne,
-	ManyToMany,
-	JoinTable,
-} from "typeorm";
+import { Entity, Column, ManyToOne, ManyToMany, JoinTable } from "typeorm";
 import { Record } from "./Record";
-import { Table } from "./Table";
 import { Dictionary } from "./Dictionary";
 import { Role } from "./Role";
 
 @Entity("acl", { schema: "system" })
 export class AccessControl extends Record {
-	@BeforeInsert()
-	setClassName(): void {
-		this.class_name = "acl";
-	}
-
 	@Column("boolean", { default: true }) active: boolean;
 
-	@ManyToOne(() => Table, { eager: true })
-	table: Table;
+	@Column("text")
+	table: string;
 
 	@ManyToOne(() => Dictionary, {
 		nullable: true,
@@ -35,9 +22,9 @@ export class AccessControl extends Record {
 	@JoinTable({ name: "acl_requires_role", schema: "system" })
 	requires_role: Role[];
 
-	@Column("varchar", { length: 40 })
+	@Column("text")
 	type: "record" | "field";
 
-	@Column("varchar", { length: 40 })
+	@Column("text")
 	operation: "create" | "read" | "update" | "delete";
 }

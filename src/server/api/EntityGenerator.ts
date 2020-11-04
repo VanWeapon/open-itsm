@@ -3,6 +3,7 @@ import * as fs from "fs";
 export type EntityJSON = {
 	name: string;
 	label: string;
+	schema: string;
 	extends?: {
 		label: string;
 		name: string;
@@ -69,10 +70,6 @@ export class EntityGenerator {
 						decorator = `@Column("text")`;
 						JStype = "string";
 						break;
-					case "varchar":
-						decorator = `@Column("varchar", {length: ${column.length}})`;
-						JStype = "string";
-						break;
 					case "int":
 						decorator = `@Column("int")`;
 						JStype = "number";
@@ -86,17 +83,17 @@ export class EntityGenerator {
 
 		let scriptStr = `import { Entity, Column, BeforeInsert } from "typeorm";
 
-		@Entity("${newEntity.name}")
-		export class ${newEntity.label} extends ${
+@Entity("${newEntity.name}", {schema: "${newEntity.schema}"})
+export class ${newEntity.label} extends ${
 			newEntity.extends?.label || "Record"
 		} {
-			@BeforeInsert()
-			setClassName(): void {
-				this.class_name = "${newEntity.name}"
-			}
+	@BeforeInsert()
+	setClassName(): void {
+		this.class_name = "${newEntity.name}"
+	}
 
-			${columnStr}
-		}`;
+	${columnStr}
+}`;
 
 		if (newEntity.extends) {
 			scriptStr = extendsImport + scriptStr;

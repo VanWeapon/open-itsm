@@ -1,18 +1,13 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity } from "typeorm";
-import { Task } from "../core/Task";
+import { BeforeInsert, BeforeUpdate, ChildEntity, Column } from "typeorm";
+import { ITSMTask } from "./ITSMTask";
 
-@Entity("incident", { schema: "itsm" })
-export class Incident extends Task {
-	readonly class_name = "incident";
-
+@ChildEntity("incident")
+export class Incident extends ITSMTask {
 	@Column("int", { default: 4 })
 	impact: 1 | 2 | 3 | 4 | 5;
 
 	@Column("int", { default: 4 })
 	urgency: 1 | 2 | 3 | 4 | 5;
-
-	@Column("varchar")
-	readonly scope = "itsm";
 
 	@BeforeUpdate()
 	@BeforeInsert()

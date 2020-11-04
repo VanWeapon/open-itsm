@@ -101,6 +101,14 @@ export class SchemaAPI {
 			).toString("utf8")
 		);
 
+		if (newEntity.extends) {
+			await connection
+				.createQueryRunner()
+				.query(
+					`ALTER TABLE ${newEntity.schema}.${newEntity.name} INHERIT ${newEntity.schema}.${newEntity.extends}`
+				);
+		}
+
 		await next();
 	}
 

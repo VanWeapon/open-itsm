@@ -1,10 +1,10 @@
 import {
 	Entity,
 	Column,
-	BeforeInsert,
 	ManyToMany,
 	JoinTable,
 	ManyToOne,
+	BeforeInsert,
 } from "typeorm";
 import { Company } from "../core/Company";
 import { Department } from "../core/Department";
@@ -13,14 +13,10 @@ import { Role } from "./Role";
 
 @Entity("user", { schema: "system" })
 export class User extends Record {
-	@BeforeInsert()
-	setClassName(): void {
-		this.class_name = "user";
-	}
-	@Column("varchar", { length: 40, nullable: false, unique: true })
+	@Column("text", { nullable: false, unique: true })
 	user_name: string;
 
-	@Column("varchar", { length: 127 })
+	@Column("text")
 	first_name: string;
 
 	@ManyToOne(() => Department)
@@ -29,13 +25,13 @@ export class User extends Record {
 	@ManyToOne(() => Company)
 	company: Company;
 
-	@Column("varchar", { length: 127 })
+	@Column("text")
 	last_name: string;
 
-	@Column("varchar", { length: 255, nullable: false })
+	@Column("text", { nullable: true })
 	email: string;
 
-	@Column("varchar", { length: 255 })
+	@Column("text")
 	name: string;
 
 	@BeforeInsert()

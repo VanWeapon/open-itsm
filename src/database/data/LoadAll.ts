@@ -6,6 +6,7 @@ import { loadSystemData } from "./LoadSystemData";
 import { loadItsmData } from "./LoadITSMData";
 import { clearData } from "./ClearAll";
 import { createConnection, getConnection, getConnectionOptions } from "typeorm";
+import { loadCMDBData } from "./LoadCMDBData";
 
 const start = async () => {
 	let connection;
@@ -16,6 +17,7 @@ const start = async () => {
 		const options = await getConnectionOptions(process.env.NODE_ENV);
 		connection = await createConnection({
 			...options,
+			logging: ["warn", "error"],
 			name: process.env.NODE_ENV,
 		});
 	}
@@ -23,6 +25,7 @@ const start = async () => {
 	await clearData();
 	await loadSystemData();
 	await loadCoreData();
+	await loadCMDBData();
 	await loadItsmData();
 	await connection.close();
 };

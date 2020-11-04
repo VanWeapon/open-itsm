@@ -28,22 +28,23 @@ export abstract class Record extends BaseEntity {
 	@UpdateDateColumn()
 	updated: Date;
 
-	@Column("varchar", { length: 40 })
+	@Column("text")
 	created_by: string;
 
-	@Column("varchar", { length: 40 })
+	@Column("text")
 	updated_by: string;
 
-	@Column("varchar", { length: 80 })
+	@Column("text")
 	class_name: string;
+
+	@Column("text")
+	scope: string;
 
 	@Column("int", { default: 0 })
 	update_count: number;
 
 	@Column("boolean", { default: true })
 	active: boolean;
-
-	abstract setClassName(): void;
 
 	@BeforeUpdate()
 	incrementUpdateCount() {

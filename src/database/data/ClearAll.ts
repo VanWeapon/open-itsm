@@ -5,6 +5,9 @@ export const clearData = async () => {
 	const connection = getConnection(process.env.NODE_ENV);
 	await connection.query("TRUNCATE system.acl CASCADE");
 	await connection.query("TRUNCATE system.acl_requires_role CASCADE");
+	await connection.query("TRUNCATE system.event CASCADE");
+	await connection.query("TRUNCATE system.event_action CASCADE");
+	await connection.query("TRUNCATE system.event_queue_entry CASCADE");
 	await connection.query("TRUNCATE system.dictionary CASCADE");
 	await connection.query("TRUNCATE system.field_label CASCADE");
 	await connection.query("TRUNCATE system.group CASCADE");
@@ -17,16 +20,12 @@ export const clearData = async () => {
 	await connection.query("TRUNCATE core.company CASCADE");
 	await connection.query("TRUNCATE core.department CASCADE");
 	await connection.query("TRUNCATE core.cost_centre CASCADE");
+	await connection.query("TRUNCATE core.location CASCADE");
 	await connection.query("TRUNCATE core.task CASCADE");
 
-	await connection.query("TRUNCATE itsm.incident CASCADE");
-	await connection.query("TRUNCATE itsm.incident_task CASCADE");
-	await connection.query("TRUNCATE itsm.change CASCADE");
-	await connection.query("TRUNCATE itsm.change_task CASCADE");
+	await connection.query("TRUNCATE itsm.itsm_task CASCADE");
 	await connection.query("TRUNCATE itsm.sla_definition CASCADE");
 	await connection.query("TRUNCATE itsm.task_sla CASCADE");
 
 	await connection.query("TRUNCATE cmdb.ci CASCADE");
-	await connection.query("TRUNCATE cmdb.hw CASCADE");
-	await connection.query("TRUNCATE cmdb.hw_computer CASCADE");
 };

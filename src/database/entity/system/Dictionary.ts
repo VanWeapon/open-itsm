@@ -1,22 +1,9 @@
 import { Record } from "./Record";
-import {
-	BeforeInsert,
-	Entity,
-	Column,
-	ManyToOne,
-	// AfterInsert,
-	getConnection,
-} from "typeorm";
-import { Table } from "./Table";
+import { Entity, Column, getConnection, ColumnType } from "typeorm";
 import { FieldLabel } from "./FieldLabel";
 
 @Entity("dictionary", { schema: "system" })
 export class Dictionary extends Record {
-	@BeforeInsert()
-	setClassName(): void {
-		this.class_name = "dictionary";
-	}
-
 	@Column("boolean", { default: false })
 	active: boolean;
 
@@ -32,23 +19,20 @@ export class Dictionary extends Record {
 	@Column("boolean", { default: false })
 	display: boolean;
 
-	@Column("varchar", { length: 80 })
+	@Column("text")
 	column_name: string;
 
-	@Column("varchar", { length: 80 })
+	@Column("text")
 	column_label: string;
 
-	@ManyToOne(() => Table, {
-		eager: true,
-		nullable: false,
-	})
-	table: Table;
+	@Column("text")
+	table: string;
 
-	@ManyToOne(() => Table, {
-		eager: true,
-		nullable: true,
-	})
-	reference_table: Table;
+	@Column("text")
+	type: ColumnType;
+
+	@Column("text", { nullable: true })
+	reference_table: string;
 
 	@Column("integer", { default: 255 })
 	max_length: number;

@@ -4,6 +4,8 @@ require("dotenv").config();
 import { getConnection } from "typeorm";
 import { AccessControl } from "../entity/system/AccessControl";
 import { Dictionary } from "../entity/system/Dictionary";
+import { Event } from "../entity/system/Event";
+import { EventAction } from "../entity/system/EventAction";
 import { Group } from "../entity/system/Group";
 import { Role } from "../entity/system/Role";
 import { Table } from "../entity/system/Table";
@@ -19,8 +21,8 @@ export const loadSystemData = async () => {
 	const connection = getConnection(process.env.NODE_ENV);
 
 	console.log(`Connection name: ${connection.name}`);
-	const created_by = "admin";
-	const updated_by = "admin";
+	const created_by = "maint";
+	const updated_by = "maint";
 
 	/**
 	 * @TABLES
@@ -77,28 +79,28 @@ export const loadSystemData = async () => {
 	/**
 	 * @ROLES
 	 */
-	const roles = connection.getRepository(Role).create([
-		{
-			created_by,
-			updated_by,
-			name: "admin",
-		},
-		{
-			created_by,
-			updated_by,
-			name: "itil",
-		},
-		{
-			created_by,
-			updated_by,
-			name: "user",
-		},
-	]);
 
-	await connection.getRepository(Role).save(roles);
-	const adminRole = roles.find((role) => role.name === "admin")!;
-	const itilRole = roles.find((role) => role.name === "itil")!;
-	const userRole = roles.find((role) => role.name === "user")!;
+	const roleRepo = connection.getRepository(Role);
+	const adminRole = roleRepo.create({
+		created_by,
+		updated_by,
+		name: "admin",
+	});
+	const itilRole = roleRepo.create({
+		created_by,
+		updated_by,
+		name: "itil",
+	});
+
+	const userRole = roleRepo.create({
+		created_by,
+		updated_by,
+		name: "user",
+	});
+
+	itilRole.includes_roles = [userRole];
+
+	await connection.getRepository(Role).save([adminRole, itilRole, userRole]);
 
 	/**
 	 * @USERS
@@ -146,7 +148,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "dbo")!,
+			table: "dbo",
 			requires_role: [adminRole],
 			operation: "create",
 		},
@@ -154,7 +156,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "dbo")!,
+			table: "dbo",
 			requires_role: [adminRole],
 			operation: "read",
 		},
@@ -162,7 +164,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "dbo")!,
+			table: "dbo",
 			requires_role: [adminRole],
 			operation: "update",
 		},
@@ -170,7 +172,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "dbo")!,
+			table: "dbo",
 			requires_role: [adminRole],
 			operation: "delete",
 		},
@@ -178,7 +180,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "acl")!,
+			table: "acl",
 			requires_role: [adminRole],
 			operation: "create",
 		},
@@ -186,7 +188,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "acl")!,
+			table: "acl"!,
 			requires_role: [adminRole],
 			operation: "read",
 		},
@@ -194,7 +196,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "acl")!,
+			table: "acl"!,
 			requires_role: [adminRole],
 			operation: "update",
 		},
@@ -202,7 +204,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "acl")!,
+			table: "acl"!,
 			requires_role: [adminRole],
 			operation: "delete",
 		},
@@ -210,7 +212,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "field_label")!,
+			table: "field_label",
 			requires_role: [adminRole],
 			operation: "create",
 		},
@@ -218,7 +220,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "field_label")!,
+			table: "field_label",
 			requires_role: [adminRole],
 			operation: "read",
 		},
@@ -226,7 +228,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "field_label")!,
+			table: "field_label",
 			requires_role: [adminRole],
 			operation: "update",
 		},
@@ -234,7 +236,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "field_label")!,
+			table: "field_label",
 			requires_role: [adminRole],
 			operation: "delete",
 		},
@@ -242,7 +244,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "group")!,
+			table: "group",
 			requires_role: [adminRole],
 			operation: "create",
 		},
@@ -250,7 +252,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "group")!,
+			table: "group",
 			requires_role: [itilRole],
 			operation: "read",
 		},
@@ -258,7 +260,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "group")!,
+			table: "group",
 			requires_role: [adminRole],
 			operation: "update",
 		},
@@ -266,7 +268,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "group")!,
+			table: "group",
 			requires_role: [adminRole],
 			operation: "delete",
 		},
@@ -274,7 +276,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "role")!,
+			table: "role",
 			requires_role: [adminRole],
 			operation: "create",
 		},
@@ -282,7 +284,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "role")!,
+			table: "role",
 			requires_role: [itilRole],
 			operation: "read",
 		},
@@ -290,7 +292,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "role")!,
+			table: "role",
 			requires_role: [adminRole],
 			operation: "update",
 		},
@@ -298,7 +300,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "role")!,
+			table: "role",
 			requires_role: [adminRole],
 			operation: "delete",
 		},
@@ -306,7 +308,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "server_script")!,
+			table: "server_script",
 			requires_role: [adminRole],
 			operation: "create",
 		},
@@ -314,7 +316,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "server_script")!,
+			table: "server_script",
 			requires_role: [adminRole],
 			operation: "read",
 		},
@@ -322,7 +324,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "server_script")!,
+			table: "server_script",
 			requires_role: [adminRole],
 			operation: "update",
 		},
@@ -330,7 +332,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "server_script")!,
+			table: "server_script",
 			requires_role: [adminRole],
 			operation: "delete",
 		},
@@ -338,7 +340,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "ui_action")!,
+			table: "ui_action",
 			requires_role: [adminRole],
 			operation: "create",
 		},
@@ -346,7 +348,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "ui_action")!,
+			table: "ui_action",
 			requires_role: [adminRole],
 			operation: "read",
 		},
@@ -354,7 +356,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "ui_action")!,
+			table: "ui_action",
 			requires_role: [adminRole],
 			operation: "update",
 		},
@@ -362,7 +364,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "ui_action")!,
+			table: "ui_action",
 			requires_role: [adminRole],
 			operation: "delete",
 		},
@@ -370,7 +372,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "user")!,
+			table: "user",
 			requires_role: [adminRole],
 			operation: "create",
 		},
@@ -378,7 +380,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "user")!,
+			table: "user",
 			requires_role: [itilRole],
 			operation: "read",
 		},
@@ -386,7 +388,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "user")!,
+			table: "user",
 			requires_role: [adminRole],
 			operation: "update",
 		},
@@ -394,7 +396,7 @@ export const loadSystemData = async () => {
 			created_by,
 			updated_by,
 			type: "record",
-			table: dbos.find((tables) => tables.name === "user")!,
+			table: "user",
 			requires_role: [adminRole],
 			operation: "delete",
 		},
@@ -418,6 +420,11 @@ export const loadSystemData = async () => {
 			name: "OpenITSM Admins",
 			contains_roles: [adminRole],
 			group_members: [adminUser],
+		},
+		{
+			created_by,
+			name: "Server Support",
+			group_members: [itilUser],
 		},
 	]);
 
@@ -471,7 +478,7 @@ export const loadSystemData = async () => {
 	 * @DICTIONARY
 	 */
 
-	const dictionaries: Dictionary[] = [];
+	// const dictionaries: Dictionary[] = [];
 	dbos.forEach((table) => {
 		const columns = connection.getRepository(table.name).metadata.columns;
 
@@ -483,9 +490,10 @@ export const loadSystemData = async () => {
 			"guid",
 			"class_name",
 			"update_count",
+			"scope",
 		];
 
-		columns.forEach((column) => {
+		columns.forEach(async (column) => {
 			if (autoGenerated.includes(column.propertyName)) {
 				return; // skip
 			}
@@ -500,11 +508,34 @@ export const loadSystemData = async () => {
 				updated_by,
 				column_name: name,
 				column_label: label,
-				table,
+				table: table.name,
+				type: column.type || "text",
 				mandatory: !column.isNullable,
 			});
-			dictionaries.push(dictionary);
+			await connection.getRepository(Dictionary).save(dictionary);
+			// dictionaries.push(dictionary);
 		});
 	});
-	await connection.getRepository(Dictionary).save(dictionaries);
+	// await connection.getRepository(Dictionary).save(dictionaries);
+
+	const events = connection.getRepository(Event).create([
+		{
+			name: "system.entity.create",
+			created_by,
+			updated_by,
+			description: "Create a new entity",
+		},
+	]);
+
+	await connection.getRepository(Event).save(events);
+
+	const eventActions = connection.getRepository(EventAction).create([
+		{
+			created_by,
+			event_name: "system.entity.create",
+			script: ``,
+		},
+	]);
+
+	await connection.getRepository(EventAction).save(eventActions);
 };

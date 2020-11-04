@@ -13,5 +13,8 @@ export class TableSubscriber implements EntitySubscriberInterface<Table> {
 
 	afterInsert(event: InsertEvent<Table>) {
 		event.entity.createDefaultDictionaries();
+		// if (event.entity.extends) {
+		// 	event.entity.createInheritance();
+		// }
 	}
 }

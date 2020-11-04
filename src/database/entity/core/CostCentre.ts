@@ -1,22 +1,17 @@
-import { BeforeInsert, Column, Entity, ManyToOne } from "typeorm";
+import { Column, Entity, ManyToOne } from "typeorm";
 import { Record } from "../system/Record";
 import { User } from "../system/User";
 import { Department } from "./Department";
 
 @Entity("cost_centre", { schema: "core" })
 export class CostCentre extends Record {
-	@BeforeInsert()
-	setClassName() {
-		this.class_name = "cost_centre";
-	}
-
-	@Column("varchar", { length: 255 })
+	@Column("text")
 	name: string;
 
 	@Column("text", { default: "" })
 	description: string;
 
-	@Column("varchar", { length: 255, default: "" })
+	@Column("text")
 	code: string;
 
 	@ManyToOne(() => User, { nullable: true })

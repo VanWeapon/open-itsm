@@ -1,23 +1,11 @@
-import {
-	BeforeInsert,
-	Column,
-	Entity,
-	JoinTable,
-	ManyToMany,
-	ManyToOne,
-} from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from "typeorm";
 import { Record } from "./Record";
 import { Role } from "./Role";
 import { User } from "./User";
 
 @Entity("group", { schema: "system" })
 export class Group extends Record {
-	@BeforeInsert()
-	setClassName(): void {
-		this.class_name = "group";
-	}
-
-	@Column("varchar", { length: 255, nullable: false })
+	@Column("text")
 	name: string;
 
 	@Column("text", { nullable: true })

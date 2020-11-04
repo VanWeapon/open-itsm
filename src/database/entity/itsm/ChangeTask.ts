@@ -1,14 +1,9 @@
-import { BeforeInsert, Entity, ManyToOne } from "typeorm";
-import { Task } from "../core/Task";
+import { ChildEntity, ManyToOne } from "typeorm";
 import { Change } from "./Change";
+import { ITSMTask } from "./ITSMTask";
 
-@Entity("change_task", { schema: "itsm" })
-export class ChangeTask extends Task {
-	@BeforeInsert()
-	setClassName() {
-		this.class_name = "change_task";
-	}
-
+@ChildEntity("change_task")
+export class ChangeTask extends ITSMTask {
 	@ManyToOne(() => Change)
 	parent_change: Change;
 }

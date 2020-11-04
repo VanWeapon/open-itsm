@@ -78,6 +78,11 @@ class SchemaAPI {
             console.log(child_process_1.execSync("ts-node .\\node_modules\\typeorm\\cli.js -c development migration:generate -n " +
                 newEntity.label).toString("utf8"));
             console.log(child_process_1.execSync("ts-node .\\node_modules\\typeorm\\cli.js -c development migration:run").toString("utf8"));
+            if (newEntity.extends) {
+                yield connection
+                    .createQueryRunner()
+                    .query(`ALTER TABLE ${newEntity.schema}.${newEntity.name} INHERIT ${newEntity.schema}.${newEntity.extends}`);
+            }
             yield next();
         });
     }
