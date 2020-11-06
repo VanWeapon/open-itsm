@@ -7,14 +7,14 @@
 		"example": "examples"
 	},
 	"scripts": {
-		"start": "SET NODE_ENV=development&& ts-node src/index.ts",
+		"start": "SET NODE_ENV=development&& node dist/index.js",
 		"watch": "tsc -w",
 		"nodemon": "SET NODE_ENV=development&& nodemon src/index.ts",
 		"load": "node dist/database/data/LoadAll.js",
 		"load:dev": "SET NODE_ENV=development&& node --trace-warnings dist/database/data/LoadAll.js",
 		"load:test": "SET NODE_ENV=test&& node dist/database/data/LoadAll.js",
 		"load:prod": "SET NODE_ENV=production&& node dist/database/data/LoadAll.js",
-		"test": "SET NODE_ENV=test&& tsc&& npm run load&& npm run jest",
+		"test": "SET NODE_ENV=test&& npm run load&& npm run jest",
 		"jest": "jest",
 		"test-server": "SET NODE_ENV=test&&node dist/database/data/LoadSystemData.js&& node dist/index.js",
 		"test-watch": "SET NODE_ENV=test&& jest --watch",

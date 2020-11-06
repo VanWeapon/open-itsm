@@ -107,5 +107,11 @@ export const loadItsmData = async () => {
 			urgency: 4,
 		},
 	]);
-	await connection.getRepository(Incident).save(incidents);
+	const incs = await connection.getRepository(Incident).save(incidents);
+
+	if (incs) {
+		return true;
+	} else {
+		return false;
+	}
 };

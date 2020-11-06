@@ -2,13 +2,21 @@ import * as app from "../server/APIServer";
 import * as request from "supertest";
 import * as http from "http";
 import { v4 } from "uuid";
+import { createConnection, getConnection, getConnectionOptions } from "typeorm";
 
 jest.setTimeout(20000);
 beforeAll(async (done) => {
+	const options = await getConnectionOptions(process.env.NODE_ENV);
+	await createConnection({
+		...options,
+		name: process.env.NODE_ENV,
+	});
+
 	done();
 });
 
 afterAll(async (done) => {
+	await getConnection(process.env.NODE_ENV).close();
 	done();
 });
 
@@ -72,7 +80,7 @@ describe("Record Endpoint", () => {
 		testComp.environment = "test";
 
 		await apptest
-			.post("/api/record/cmdb_hw")
+			.post("/api/record/hw")
 			.set({ "X-User": "tester" })
 			.send(testHw)
 			.then((response) => {
@@ -81,7 +89,7 @@ describe("Record Endpoint", () => {
 			});
 
 		await apptest
-			.post("/api/record/cmdb_hw_computer")
+			.post("/api/record/hw_computer")
 			.set({ "X-User": "tester" })
 			.send(testComp)
 			.then((response) => {
@@ -89,9 +97,48 @@ describe("Record Endpoint", () => {
 				console.log(response.body);
 			});
 
-		await apptest.get("/api/record/cmdb_hw").then((response) => {
+		await apptest.get("/api/record/hw").then((response) => {
 			console.log(response.error);
 			console.log(response.body);
 		});
+	});
+});
+
+describe("UI Endpoint", () => {
+	const apptest = request(http.createServer(app.callback()));
+	it("Has a ui endpoint for global actions", async () => {
+		const response = await apptest
+			.get("/api/ui/global/actions")
+			.expect(200);
+
+		const body = JSON.parse(response.body);
+		expect(body).toHaveProperty("form");
+		expect(body).toHaveProperty("list");
+		expect(body).toHaveProperty("actions");
+		expect(body.actions).not.toHaveLength(0);
+	});
+
+	it("Has a UI endpoint for incident", async () => {
+		const response = await apptest.get("/api/ui/incident").expect(200);
+
+		const body = JSON.parse(response.body);
+		expect(body).toHaveProperty("form");
+		expect(body).toHaveProperty("list");
+		expect(body).toHaveProperty("actions");
+	});
+});
+
+describe("Schema Endpoint", () => {
+	const apptest = request(http.createServer(app.callback()));
+
+	it("Has a schema endpoint for incident", async () => {
+		const response = await apptest.get("/api/schema/incident").expect(200);
+
+		const body = JSON.parse(response.body);
+		expect(body instanceof Array).toBe(true);
+		expect(body[0] instanceof Object).toBe(true);
+		expect(body[0]).toHaveProperty("column_name");
+		expect(body[0]).toHaveProperty("type");
+		expect(body[0]).toHaveProperty("db_name");
 	});
 });

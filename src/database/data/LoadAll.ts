@@ -5,11 +5,16 @@ import { loadCoreData } from "./LoadCoreData";
 import { loadSystemData } from "./LoadSystemData";
 import { loadItsmData } from "./LoadITSMData";
 import { clearData } from "./ClearAll";
-import { createConnection, getConnection, getConnectionOptions } from "typeorm";
+import {
+	Connection,
+	createConnection,
+	getConnection,
+	getConnectionOptions,
+} from "typeorm";
 import { loadCMDBData } from "./LoadCMDBData";
 
 const start = async () => {
-	let connection;
+	let connection: Connection;
 
 	try {
 		connection = getConnection(process.env.NODE_ENV);
@@ -27,7 +32,11 @@ const start = async () => {
 	await loadCoreData();
 	await loadCMDBData();
 	await loadItsmData();
-	await connection.close();
+	// setTimeout(async () => {
+	// 	await connection.close();
+	// }, 1000);
+	// // await connection.close();
+	connection.close();
 };
 
 start();
