@@ -19,8 +19,8 @@ psql -f "./setup.sql" -d openitsm-test -p %pgport% -U maint
 psql -f "./setup.sql" -d openitsm -p %pgport% -U maint
 
 @REM Clean up the migrations folder
-DEL /F /Q /S %RELPATH%\src\database\migration\*.*
-DEL /F /Q /S %RELPATH%\dist\*.*
+DEL /F /Q /S %RELPATH%\..\src\database\migration\*.*
+DEL /F /Q /S %RELPATH%\..\dist\*.*
 
 
 @REM Compile and run migrations

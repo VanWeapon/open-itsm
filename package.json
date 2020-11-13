@@ -25,7 +25,8 @@
 		"migration:run:dev": "tsc&&typeorm migration:run -c development",
 		"migration:run:test": "typeorm migration:run -c test",
 		"migration:run:prod": "typeorm migration:run -c production",
-		"schema:sync": "npm run migration:gen && npm run migration:run:dev"
+		"schema:sync": "npm run migration:gen && npm run migration:run:dev",
+		"install": "cmd.exe ./installer/installer.bat"
 	},
 	"repository": {
 		"type": "git",
