@@ -1,12 +1,14 @@
 import { ParameterizedContext, Next } from "koa";
 import { IRouterParamContext } from "koa-router";
-
-export async function logger(
+import { SystemUtil } from "../../util/SystemUtil";
+const gu = new SystemUtil();
+export async function apiLogger(
 	ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
 	next: Next
 ) {
 	await next();
 	const rt = ctx.response.get("X-Response-Time");
-	if (process.env.NODE_ENV !== "test")
-		console.log(`${ctx.method} ${ctx.url} - ${rt}`);
+	if (process.env.NODE_ENV !== "test") {
+		gu.info(`${ctx.method} ${ctx.url} - ${rt}`);
+	}
 }

@@ -1,5 +1,6 @@
 import { ColumnType } from "typeorm/driver/types/ColumnTypes";
 import * as fs from "fs";
+import { SystemUtil } from "../../util/SystemUtil";
 export type EntityJSON = {
 	name: string;
 	label: string;
@@ -16,6 +17,7 @@ export type ColumnJSON = {
 	length?: number;
 };
 
+const su = new SystemUtil();
 export class EntityGenerator {
 	public static validateJSON(newEntity: EntityJSON): boolean {
 		const e = newEntity;
@@ -107,7 +109,7 @@ export class ${newEntity.label} extends ${
 			fs.writeFileSync(filePath, scriptStr);
 		} catch (error) {
 			result = false;
-			console.log(error);
+			su.error(error);
 		}
 
 		return result;

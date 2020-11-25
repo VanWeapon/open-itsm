@@ -6,7 +6,7 @@ import {
 import { Record } from "../entity/system/Record";
 
 @EventSubscriber()
-export class DictionarySubscriber implements EntitySubscriberInterface<Record> {
+export class EntityClassName implements EntitySubscriberInterface<Record> {
 	beforeInsert(event: InsertEvent<Record>) {
 		if (!event.entity) return;
 		try {

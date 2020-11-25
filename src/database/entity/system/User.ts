@@ -1,15 +1,7 @@
-import {
-	Entity,
-	Column,
-	ManyToMany,
-	JoinTable,
-	ManyToOne,
-	BeforeInsert,
-} from "typeorm";
+import { Entity, Column, ManyToOne, BeforeInsert } from "typeorm";
 import { Company } from "../core/Company";
 import { Department } from "../core/Department";
 import { Record } from "./Record";
-import { Role } from "./Role";
 
 @Entity("user", { schema: "system" })
 export class User extends Record {
@@ -44,8 +36,4 @@ export class User extends Record {
 			this.name = `${this.first_name} ${this.last_name}`;
 		}
 	}
-
-	@ManyToMany(() => Role)
-	@JoinTable({ name: "user_has_role" })
-	user_roles: Role[];
 }

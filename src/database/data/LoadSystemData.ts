@@ -2,25 +2,30 @@ import "reflect-metadata";
 // tslint:disable-next-line: no-var-requires
 require("dotenv").config();
 import { getConnection } from "typeorm";
+import { SystemUtil } from "../../util/SystemUtil";
 import { AccessControl } from "../entity/system/AccessControl";
 import { Dictionary } from "../entity/system/Dictionary";
 import { Event } from "../entity/system/Event";
 import { EventAction } from "../entity/system/EventAction";
 import { Group } from "../entity/system/Group";
+import { ACLRequiresRole } from "../entity/system/m2m/ACLRequiresRole";
+import { GroupContainsRole } from "../entity/system/m2m/GroupContainsRole";
+import { GroupMembership } from "../entity/system/m2m/GroupMembership";
 import { Role } from "../entity/system/Role";
 import { Table } from "../entity/system/Table";
 import { UIAction } from "../entity/system/UIAction";
 import { User } from "../entity/system/User";
-
+const su = new SystemUtil();
 /**
  * Create data for all the tables in the system schema
  * Roles/acls etc for non-system schemas will be created in separate load scripts
  */
 export const loadSystemData = async () => {
-	console.log(`Current execution environment: ${process.env.NODE_ENV}`);
+	su.debug(
+		`LoadSystemData: Current execution environment: ${process.env.NODE_ENV}`
+	);
 	const connection = getConnection(process.env.NODE_ENV);
 
-	console.log(`Connection name: ${connection.name}`);
 	const created_by = "maint";
 	const updated_by = "maint";
 
@@ -28,49 +33,89 @@ export const loadSystemData = async () => {
 	 * @TABLES
 	 */
 	const dbos = connection.getRepository(Table).create([
-		{ created_by, updated_by, name: "dbo", label: "Table" },
-		{ created_by, updated_by, name: "user", label: "User" },
+		{
+			created_by,
+			updated_by,
+			name: "dbo",
+			label: "Table",
+			table_scope: "system",
+		},
+		{
+			created_by,
+			updated_by,
+			name: "user",
+			label: "User",
+			table_scope: "system",
+		},
 		{
 			created_by,
 			updated_by,
 			name: "dictionary",
 			label: "Dictionary",
+			table_scope: "system",
 		},
 		{
 			created_by,
 			updated_by,
 			name: "acl",
 			label: "Access Control",
+			table_scope: "system",
+		},
+		{
+			created_by,
+			updated_by,
+			name: "acl_requires_role",
+			label: "ACL Requires Role",
+			table_scope: "system",
 		},
 		{
 			created_by,
 			updated_by,
 			name: "field_label",
 			label: "Field Label",
+			table_scope: "system",
 		},
 		{
 			created_by,
 			updated_by,
 			name: "group",
 			label: "Group",
+			table_scope: "system",
+		},
+		{
+			created_by,
+			updated_by,
+			name: "group_membership",
+			label: "Group Membership",
+			table_scope: "system",
 		},
 		{
 			created_by,
 			updated_by,
 			name: "ui_action",
 			label: "UI Action",
+			table_scope: "system",
+		},
+		{
+			created_by,
+			updated_by,
+			name: "ui_action_requires_role",
+			label: "UI Action Requires Role",
+			table_scope: "system",
 		},
 		{
 			created_by,
 			updated_by,
 			name: "server_script",
 			label: "Server Script",
+			table_scope: "system",
 		},
 		{
 			created_by,
 			updated_by,
 			name: "role",
 			label: "Role",
+			table_scope: "system",
 		},
 	]);
 
@@ -403,32 +448,94 @@ export const loadSystemData = async () => {
 	]);
 
 	await connection.getRepository(AccessControl).save(acls);
+
+	/**
+	 * @ACLCONTAINSROLE
+	 */
+	acls.forEach(async (acl) => {
+		const aclRole = connection.getRepository(ACLRequiresRole).create({
+			acl,
+			role: adminRole,
+			created_by,
+		});
+		if (
+			["user", "role", "group"].includes(acl.table) &&
+			acl.operation === "read"
+		) {
+			const aclRole2 = connection.getRepository(ACLRequiresRole).create({
+				acl,
+				role: itilRole,
+				created_by,
+			});
+			await connection.getRepository(ACLRequiresRole).save(aclRole2);
+		}
+		await connection.getRepository(ACLRequiresRole).save(aclRole);
+	});
+
 	/**
 	 * @GROUPS
 	 */
 	const groups = connection.getRepository(Group).create([
 		{
 			created_by,
-			updated_by,
 			name: "Service Desk",
-			contains_roles: [itilRole],
-			group_members: [itilUser],
 		},
 		{
 			created_by,
-			updated_by,
 			name: "OpenITSM Admins",
-			contains_roles: [adminRole],
-			group_members: [adminUser],
 		},
 		{
 			created_by,
 			name: "Server Support",
-			group_members: [itilUser],
 		},
 	]);
 
 	await connection.getRepository(Group).save(groups);
+
+	const serviceDeskGroup = await connection
+		.getRepository(Group)
+		.findOne({ where: { name: "Service Desk" } });
+	const adminGroup = await connection
+		.getRepository(Group)
+		.findOne({ where: { name: "OpenITSM Admins" } });
+	const serverGroup = await connection
+		.getRepository(Group)
+		.findOne({ where: { name: "Server Support" } });
+
+	const groupMembers = connection.getRepository(GroupMembership).create([
+		{
+			created_by,
+			group: serviceDeskGroup,
+			user: itilUser,
+		},
+		{
+			created_by,
+			group: serverGroup,
+			user: itilUser,
+		},
+		{
+			created_by,
+			group: adminGroup,
+			user: adminUser,
+		},
+	]);
+
+	await connection.getRepository(GroupMembership).save(groupMembers);
+
+	const groupRoles = connection.getRepository(GroupContainsRole).create([
+		{
+			created_by,
+			group: serviceDeskGroup,
+			role: itilRole,
+		},
+		{
+			created_by,
+			group: adminGroup,
+			role: adminRole,
+		},
+	]);
+
+	await connection.getRepository(GroupContainsRole).save(groupRoles);
 
 	const actions = connection.getRepository(UIAction).create([
 		{

@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import { getConnection } from "typeorm";
+import { SystemUtil } from "../../util/SystemUtil";
 import { Application } from "../entity/cmdb/Application";
 import { Computer } from "../entity/cmdb/Computer";
 import { Company } from "../entity/core/Company";
@@ -9,7 +10,11 @@ import { User } from "../entity/system/User";
 // tslint:disable-next-line: no-var-requires
 require("dotenv").config();
 
+const su = new SystemUtil();
 export const loadCMDBData = async () => {
+	su.info(
+		`LoadCMDBData: Current execution environment: ${process.env.NODE_ENV}`
+	);
 	const connection = getConnection(process.env.NODE_ENV);
 
 	const created_by = "maint";
@@ -27,6 +32,7 @@ export const loadCMDBData = async () => {
 			label: "Hardware",
 			table_scope: "cmdb",
 			extends: "cmdb.ci",
+			extends_root: "cmdb.ci",
 		},
 		{
 			created_by,
@@ -34,6 +40,7 @@ export const loadCMDBData = async () => {
 			label: "Computer",
 			table_scope: "cmdb",
 			extends: "cmdb.hw",
+			extends_root: "cmdb.ci",
 		},
 		{
 			created_by,
@@ -41,6 +48,7 @@ export const loadCMDBData = async () => {
 			label: "Application",
 			table_scope: "cmdb",
 			extends: "cmdb.ci",
+			extends_root: "cmdb.ci",
 		},
 	]);
 

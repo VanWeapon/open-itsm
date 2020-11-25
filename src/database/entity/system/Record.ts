@@ -19,6 +19,8 @@ import {
  * @method setClassName BeforeInsert() set class name to a string of the name of the table
  */
 export abstract class Record extends BaseEntity {
+	[index: string]: any;
+
 	@PrimaryGeneratedColumn("uuid")
 	guid: string;
 
@@ -28,7 +30,7 @@ export abstract class Record extends BaseEntity {
 	@UpdateDateColumn()
 	updated: Date;
 
-	@Column("text")
+	@Column("text", { default: "system" })
 	created_by: string;
 
 	@Column("text")

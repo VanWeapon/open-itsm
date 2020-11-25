@@ -1,3 +1,13 @@
+import { ParameterizedContext, Next } from "koa";
+import { IRouterParamContext } from "koa-router";
+import { execSync } from "child_process";
+import { EntityJSON, EntityGenerator } from "./EntityGenerator";
+import { getConnection } from "typeorm";
+import { Table } from "../../database/entity/system/Table";
+import { SystemUtil } from "../../util/SystemUtil";
+// import { getConnectionOptions } from "typeorm";
+const su = new SystemUtil();
+
 /**
  * SchemaAPI will get data definitions of the database tables
  * E.g.
@@ -5,14 +15,6 @@
  * Will return all the field names, field types, of the incident table
  * WIll return properties of the table, such as mandatory fields, primary/foreign keys etc
  */
-
-import { ParameterizedContext, Next } from "koa";
-import { IRouterParamContext } from "koa-router";
-import { execSync } from "child_process";
-import { EntityJSON, EntityGenerator } from "./EntityGenerator";
-import { getConnection } from "typeorm";
-import { Table } from "../../database/entity/system/Table";
-// import { getConnectionOptions } from "typeorm";
 export class SchemaAPI {
 	public static async get(
 		ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
@@ -21,16 +23,29 @@ export class SchemaAPI {
 		const connection = getConnection(process.env.NODE_ENV);
 		const tableName = ctx.params.table || null;
 
+		su.debug("SchemaAPI GET");
+		su.debug(`Connected: ${connection.isConnected} ${connection.name}`);
+		su.debug(`Table name: ${tableName}`);
+		su.debug("Schema dump");
+		connection.entityMetadatas.forEach((e) => {
+			try {
+				su.debug(
+					`${e.name}|${e.tableName}|${e.givenTableName}|${e.targetName}|${e.parentEntityMetadata.name}|`
+				);
+			} catch {}
+		});
+
 		try {
 			connection.getRepository(tableName);
 		} catch (error) {
 			if (error.name === "RepositoryNotFoundError") {
-				ctx.status = 404;
-				ctx.body = `Table ${tableName} not found`;
+				su.warn(`Table ${tableName} not found`);
+				ctx.response.status = 404;
+				ctx.response.body = `Table ${tableName} not found`;
 			} else {
-				console.log(error);
-				ctx.status = 400;
-				ctx.body = error;
+				su.error(error);
+				ctx.response.status = 400;
+				ctx.response.body = error;
 			}
 			await next();
 			return;
@@ -82,20 +97,20 @@ export class SchemaAPI {
 		}
 		// TODO: Create a status api endpoint and handle asynchronously
 
-		console.log(
+		su.info(
 			execSync(
 				"ts-node .\\node_modules\\typeorm\\cli.js -c development migration:run"
 			).toString("utf8")
 		);
 
-		console.log(
+		su.info(
 			execSync(
 				"ts-node .\\node_modules\\typeorm\\cli.js -c development migration:generate -n " +
 					newEntity.label
 			).toString("utf8")
 		);
 
-		console.log(
+		su.info(
 			execSync(
 				"ts-node .\\node_modules\\typeorm\\cli.js -c development migration:run"
 			).toString("utf8")

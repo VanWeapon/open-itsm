@@ -14,13 +14,13 @@ createdb -p %pgport% -U postgres -O maint "openitsm-test" "Testing database for 
 createdb -p %pgport% -U postgres -O maint "openitsm" "Production database for OpenITSM"
 
 @REM Run inital database setup via SQL to create default schemas
-psql -f "./setup.sql" -d openitsm-dev -p %pgport% -U maint
-psql -f "./setup.sql" -d openitsm-test -p %pgport% -U maint
-psql -f "./setup.sql" -d openitsm -p %pgport% -U maint
+psql -f "./installer/setup.sql" -d openitsm-dev -p %pgport% -U maint
+psql -f "./installer/setup.sql" -d openitsm-test -p %pgport% -U maint
+psql -f "./installer/setup.sql" -d openitsm -p %pgport% -U maint
 
 @REM Clean up the migrations folder
 DEL /F /Q /S %RELPATH%\..\src\database\migration\*.*
-DEL /F /Q /S %RELPATH%\..\dist\*.*
+DEL /F /Q /S %RELPATH%\..\build\*.*
 
 
 @REM Compile and run migrations
@@ -34,11 +34,11 @@ CALL typeorm migration:run -c production
 
 
 SET NODE_ENV=development
-CALL node ./dist/database/data/LoadAll.js
+CALL node ./build/database/data/LoadAll.js
 
 SET NODE_ENV=test
-CALL node ./dist/database/data/LoadAll.js
+CALL node ./build/database/data/LoadAll.js
 
 SET NODE_ENV=production
-CALL node ./dist/database/data/LoadAll.js
+CALL node ./build/database/data/LoadAll.js
 

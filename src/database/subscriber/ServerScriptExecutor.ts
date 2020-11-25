@@ -8,9 +8,10 @@ import {
 	LoadEvent,
 } from "typeorm";
 import { Evaluator } from "../../server/utilities/Evaluator";
+import { SystemUtil } from "../../util/SystemUtil";
 import { Record } from "../entity/system/Record";
 import { ServerScript } from "../entity/system/ServerScript";
-
+const su = new SystemUtil();
 @EventSubscriber()
 export class ServerScriptExecutor implements EntitySubscriberInterface<Record> {
 	beforeInsert(event: InsertEvent<Record>) {
@@ -39,7 +40,7 @@ export class ServerScriptExecutor implements EntitySubscriberInterface<Record> {
 						evaluator.setScript(script.script);
 						evaluator.evaluateScript();
 					} catch (error) {
-						console.log(error);
+						su.error(error);
 					}
 				});
 			});
@@ -70,7 +71,7 @@ export class ServerScriptExecutor implements EntitySubscriberInterface<Record> {
 						evaluator.setScript(script.script);
 						evaluator.evaluateScript();
 					} catch (error) {
-						console.log(error);
+						su.error(error);
 					}
 				});
 			});
@@ -101,7 +102,7 @@ export class ServerScriptExecutor implements EntitySubscriberInterface<Record> {
 						evaluator.setScript(script.script);
 						evaluator.evaluateScript();
 					} catch (error) {
-						console.log(error);
+						su.error(error);
 					}
 				});
 			});
@@ -132,7 +133,7 @@ export class ServerScriptExecutor implements EntitySubscriberInterface<Record> {
 						evaluator.setScript(script.script);
 						evaluator.evaluateScript();
 					} catch (error) {
-						console.log(error);
+						su.error(error);
 					}
 				});
 			});
@@ -166,7 +167,7 @@ export class ServerScriptExecutor implements EntitySubscriberInterface<Record> {
 						evaluator.setScript(script.script);
 						evaluator.evaluateScript();
 					} catch (error) {
-						console.log(error);
+						su.error(error);
 					}
 				});
 			});
@@ -200,37 +201,37 @@ export class ServerScriptExecutor implements EntitySubscriberInterface<Record> {
 						evaluator.setScript(script.script);
 						evaluator.evaluateScript();
 					} catch (error) {
-						console.log(error);
+						su.error(error);
 					}
 				});
 			});
 	}
-	afterLoad(entity: Record, event: LoadEvent<Record>) {
-		const tableName = event.metadata.tableName;
-		getConnection(process.env.NODE_ENV)
-			.getRepository(ServerScript)
-			.find({
-				where: {
-					table: tableName,
-					when: "after",
-					on: "load",
-					active: true,
-				},
-				select: ["script", "name", "order"],
-			})
-			.then((scripts) => {
-				const sorted = scripts.sort((a, b) => {
-					return a.order - b.order;
-				});
-				sorted.forEach((script) => {
-					try {
-						const evaluator = new Evaluator(tableName, entity.guid);
-						evaluator.setScript(script.script);
-						evaluator.evaluateScript();
-					} catch (error) {
-						console.log(error);
-					}
-				});
-			});
-	}
+	// afterLoad(entity: Record, event: LoadEvent<Record>) {
+	// 	const tableName = event.metadata.tableName;
+	// 	getConnection(process.env.NODE_ENV)
+	// 		.getRepository(ServerScript)
+	// 		.find({
+	// 			where: {
+	// 				table: tableName,
+	// 				when: "after",
+	// 				on: "load",
+	// 				active: true,
+	// 			},
+	// 			select: ["script", "name", "order"],
+	// 		})
+	// 		.then((scripts) => {
+	// 			const sorted = scripts.sort((a, b) => {
+	// 				return a.order - b.order;
+	// 			});
+	// 			sorted.forEach((script) => {
+	// 				try {
+	// 					const evaluator = new Evaluator(tableName, entity.guid);
+	// 					evaluator.setScript(script.script);
+	// 					evaluator.evaluateScript();
+	// 				} catch (error) {
+	// 					su.error(error);
+	// 				}
+	// 			});
+	// 		});
+	// }
 }

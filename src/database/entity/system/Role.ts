@@ -1,6 +1,5 @@
 import { Record } from "./Record";
-import { Entity, Column, ManyToMany, OneToMany } from "typeorm";
-import { AccessControl } from "./AccessControl";
+import { Entity, Column, OneToMany } from "typeorm";
 
 @Entity("role", { schema: "system" })
 export class Role extends Record {
@@ -9,7 +8,4 @@ export class Role extends Record {
 
 	@OneToMany(() => Role, (r) => r.includes_roles)
 	includes_roles: Role[];
-
-	@ManyToMany(() => AccessControl, (acl) => acl.requires_role)
-	acl_requires_role: AccessControl[];
 }

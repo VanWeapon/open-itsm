@@ -4,7 +4,7 @@
     "module": "CommonJS",
     "lib": ["dom", "es6", "es2017", "esnext.asynciterable"],
     "sourceMap": true,
-    "outDir": "./dist",
+    "outDir": "build",
     "moduleResolution": "node",
 
     "removeComments": true,
@@ -12,7 +12,7 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "noImplicitThis": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,

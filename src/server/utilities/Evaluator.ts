@@ -1,6 +1,8 @@
 import { getConnection } from "typeorm";
 import { Record } from "../../database/entity/system/Record";
 import { parse, eval } from "expression-eval";
+import { SystemUtil } from "../../util/SystemUtil";
+const su = new SystemUtil();
 export class Evaluator {
 	private variables: [{ name: string; value: any }];
 	private table: string;
@@ -23,7 +25,7 @@ export class Evaluator {
 				}
 			})
 			.catch((error) => {
-				console.log(error);
+				su.error(error);
 				return null;
 			});
 	}

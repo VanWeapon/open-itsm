@@ -2,18 +2,20 @@ import Koa = require("koa");
 import Router = require("koa-router");
 import bodyParser = require("koa-bodyparser");
 
-import { logger } from "./middleware/logger";
+import { apiLogger } from "./middleware/logger";
 import { RecordAPI } from "./api/RecordAPI";
 import { responseTime } from "./middleware/responsetime";
 import { SchemaAPI } from "./api/SchemaAPI";
 import { UIAPI } from "./api/UIAPI";
+import { setEnvironmentHeader } from "./middleware/setEnvironmentHeader";
 
 const app = new Koa();
 const router = new Router();
 
 // logger
-app.use(logger)
+app.use(apiLogger)
 	.use(responseTime)
+	.use(setEnvironmentHeader)
 	.use(bodyParser())
 	.use(router.routes())
 	.use(router.allowedMethods());

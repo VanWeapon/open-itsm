@@ -1,6 +1,6 @@
 
 ### GET All incident records
-GET http://localhost:3000/api/record/ci HTTP/1.1
+GET http://localhost:3000/api/record/incident HTTP/1.1
 
 ### GET All incident records
 GET http://localhost:3000/api/record/user/643f70bd-4db1-4df7-9c1f-dd8c5e7f2c80 HTTP/1.1
@@ -62,7 +62,7 @@ Content-Type: application/json
 }
 
 ### Get Metadata for the incident table 
-GET http://localhost:3000/api/schema/dbo HTTP/1.1
+GET http://localhost:3000/api/schema/itsm_task HTTP/1.1
 
 
 ### BAD Get Metadata for the request table 

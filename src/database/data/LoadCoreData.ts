@@ -2,6 +2,7 @@ import "reflect-metadata";
 // tslint:disable-next-line: no-var-requires
 require("dotenv").config();
 import { getConnection } from "typeorm";
+import { SystemUtil } from "../../util/SystemUtil";
 import { Company } from "../entity/core/Company";
 import { CostCentre } from "../entity/core/CostCentre";
 import { Department } from "../entity/core/Department";
@@ -10,12 +11,14 @@ import { Role } from "../entity/system/Role";
 import { Table } from "../entity/system/Table";
 import { User } from "../entity/system/User";
 
+const su = new SystemUtil();
 export const loadCoreData = async () => {
-	console.log(`Current execution environment: ${process.env.NODE_ENV}`);
+	su.debug(
+		`LoadCoreData: Current execution environment: ${process.env.NODE_ENV}`
+	);
 	const connection = getConnection(process.env.NODE_ENV);
 
-	console.log(`Connection name: ${connection.name}`);
-	const created_by = "admin";
+	const created_by = "maint";
 
 	const dbos = connection.getRepository(Table).create([
 		{ created_by, name: "company", label: "Company", table_scope: "core" },

@@ -1,4 +1,6 @@
-[
+const SnakeNamingStrategy = require("typeorm-naming-strategies").SnakeNamingStrategy;
+
+module.exports = [
 	{
 		"name": "development",
 		"type": "postgres",
@@ -8,9 +10,10 @@
 		"database": "openitsm-dev",
 		"synchronize": false,
 		"logging": true,
-		"entities": ["dist/database/entity/**/*.js"],
-		"migrations": ["dist/database/migration/**/*.js"],
-		"subscribers": ["dist/database/subscriber/**/*.js"],
+		"entities": ["build/database/entity/**/*.js"],
+		"migrations": ["build/database/migration/**/*.js"],
+		"subscribers": ["build/database/subscriber/**/*.js"],
+		"namingStrategy": new SnakeNamingStrategy(),
 		"cli": {
 			"entitiesDir": "src/database/entity",
 			"migrationsDir": "src/database/migration",
@@ -27,9 +30,11 @@
 		"synchronize": false,
 		"dropSchema": false,
 		"logging": ["warn", "error"],
-		"entities": ["dist/database/entity/**/*.js"],
-		"migrations": ["dist/database/migration/**/*.js"],
-		"subscribers": ["dist/database/subscriber/**/*.js"],
+		"entities": ["build/database/entity/**/*.js"],
+		"migrations": ["build/database/migration/**/*.js"],
+		"subscribers": ["build/database/subscriber/**/*.js"],
+		"namingStrategy": new SnakeNamingStrategy(),
+
 		"cli": {
 			"entitiesDir": "src/database/entity",
 			"migrationsDir": "src/database/migration",
@@ -46,9 +51,11 @@
 		"synchronize": false,
 		"dropSchema": false,
 		"logging": true,
-		"entities": ["dist/database/entity/**/*.js"],
-		"migrations": ["dist/database/migration/**/*.js"],
-		"subscribers": ["dist/database/subscriber/**/*.js"],
+		"entities": ["build/database/entity/**/*.js"],
+		"migrations": ["build/database/migration/**/*.js"],
+		"subscribers": ["build/database/subscriber/**/*.js"],
+		"namingStrategy": new SnakeNamingStrategy(),
+
 		"cli": {
 			"entitiesDir": "src/database/entity",
 			"migrationsDir": "src/database/migration",

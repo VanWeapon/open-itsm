@@ -86,7 +86,7 @@ export class UIAPI {
 	) {
 		const tableEntity = await connection
 			.getRepository(Table)
-			.findOne({ name: tableName });
+			.findOne({ where: { name: tableName } });
 		// const fieldArray = connection.getRepository(tableName).metadata.columns;
 		const fieldArray = connection
 			.getRepository(Dictionary)

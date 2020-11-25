@@ -1,8 +1,13 @@
 import { ParameterizedContext, Next } from "koa";
 import { IRouterParamContext } from "koa-router";
 import { getConnection, Repository } from "typeorm";
+import { validate } from "uuid";
+import { Dictionary } from "../../database/entity/system/Dictionary";
 import { Record } from "../../database/entity/system/Record";
-
+import { Table } from "../../database/entity/system/Table";
+import { DBUtil } from "../../util/DBUtil";
+import { SystemUtil } from "../../util/SystemUtil";
+const su = new SystemUtil();
 /**
  * RecordAPI
  * Retreives or inserts records into a given table
@@ -17,21 +22,48 @@ export class RecordAPI {
 		ctx: ParameterizedContext<any, IRouterParamContext<any, {}>>,
 		next: Next
 	) {
-		const connection = getConnection(process.env.NODE_ENV);
+		const connection = await new DBUtil().connect();
+		if (!connection) {
+			ctx.status = 500;
+			ctx.body = "Error connecting to database";
+			await next();
+			return;
+		}
+		const dboRepository = connection.getRepository(Table);
 		const tableName = ctx.params.table;
 		const id = ctx.params.id || null;
-		let repository: Repository<any>;
+		let repository: Repository<Record>;
+		let dbo: Table | undefined;
+
 		try {
-			repository = connection.getRepository(tableName);
+			dbo = await dboRepository.findOne({
+				where: { name: tableName },
+			});
+			if (!dbo) {
+				throw new Error("dbo reference not found");
+			}
+			su.debug(
+				`Name: ${dbo.name}\nExtents: ${dbo.extends}\nRoot: ${dbo.extends_root}\nScope: ${dbo.table_scope}`
+			);
+			// tslint:disable-next-line: prefer-conditional-expression
+			if (dbo.extends) {
+				repository = connection.getRepository(`${dbo.extends_root}`);
+			} else {
+				repository = connection.getRepository(`${dbo.name}`);
+			}
 		} catch (e) {
 			ctx.status = 404;
 			ctx.body = `Table name: ${tableName} does not exist`;
+			if (process.env.NODE_ENV === "development") {
+				ctx.body += `\n${e}`;
+			}
 			await next();
 			return;
 		}
 
-		const entityName = repository.metadata.name;
-		// console.log(`Connected to ${entityName} repo`);
+		const entityName = dbo.name;
+		const repoName = repository.metadata.name;
+		su.debug(`Connected to ${repoName} repo for table ${entityName}`);
 		if (id) {
 			try {
 				const record = await RecordAPI.getByID(id, repository);
@@ -53,7 +85,48 @@ export class RecordAPI {
 				return;
 			}
 		} else {
-			const records = await repository.find();
+			const records = await repository.find({
+				where: { class_name: entityName },
+				loadRelationIds: true,
+			});
+			records.forEach(async (record) => {
+				for (const key in record) {
+					if (key !== "guid" && validate(record[key])) {
+						// this is a guid field referencing something
+						const dictionaryEntry = await connection
+							.getRepository(Dictionary)
+							.findOne({
+								where: { column_name: key, table: entityName },
+							});
+						const refTable = dictionaryEntry?.reference_table;
+						if (!refTable) {
+							ctx.status = 500;
+							ctx.body +=
+								"Reftable failed for " +
+								dictionaryEntry?.column_name;
+						}
+						const displayField = await connection
+							.getRepository(Dictionary)
+							.findOne({
+								where: { table: entityName, display: true },
+							});
+
+						if (displayField) {
+							// const referenceRecord = await connection
+							// 	.getRepository<Record>(refTable!)
+							// 	.findOne(record[key]);
+							// const displayValue = referenceRecord![
+							// 	displayField.column_name
+							// ];
+							// const refFieldObj = {
+							// 	value: record[key],
+							// 	display: displayValue,
+							// };
+						}
+					}
+				}
+			});
+
 			if (records) {
 				ctx.status = 200;
 				ctx.body = records;
