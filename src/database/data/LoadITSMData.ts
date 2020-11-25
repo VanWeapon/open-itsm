@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import { getConnection } from "typeorm";
+import { SystemUtil } from "../../util/SystemUtil";
 import { Application } from "../entity/cmdb/Application";
 import { Computer } from "../entity/cmdb/Computer";
 import { Incident } from "../entity/itsm/Incident";
@@ -9,7 +10,11 @@ import { User } from "../entity/system/User";
 // tslint:disable-next-line: no-var-requires
 require("dotenv").config();
 
+const su = new SystemUtil();
 export const loadItsmData = async () => {
+	su.debug(
+		`LoadITSMData: Current execution environment: ${process.env.NODE_ENV}`
+	);
 	const connection = getConnection(process.env.NODE_ENV);
 
 	const created_by = "maint";
@@ -20,28 +25,32 @@ export const loadItsmData = async () => {
 			name: "incident",
 			label: "Incident",
 			table_scope: "itsm",
-			extends: "core.task",
+			extends: "itsm.itsm_task",
+			extends_root: "itsm.itsm_task",
 		},
 		{
 			created_by,
 			name: "incident_task",
 			label: "Incident Task",
 			table_scope: "itsm",
-			extends: "core.task",
+			extends: "itsm.itsm_task",
+			extends_root: "itsm.itsm_task",
 		},
 		{
 			created_by,
 			name: "change",
 			label: "Change",
 			table_scope: "itsm",
-			extends: "core.task",
+			extends: "itsm.itsm_task",
+			extends_root: "itsm.itsm_task",
 		},
 		{
 			created_by,
 			name: "change_task",
 			label: "Change Task",
 			table_scope: "itsm",
-			extends: "core.task",
+			extends: "itsm.itsm_task",
+			extends_root: "itsm.itsm_task",
 		},
 		{
 			created_by,

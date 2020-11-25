@@ -2,21 +2,20 @@ import * as app from "../server/APIServer";
 import * as request from "supertest";
 import * as http from "http";
 import { v4 } from "uuid";
-import { createConnection, getConnection, getConnectionOptions } from "typeorm";
-
+import { SystemUtil } from "../util/SystemUtil";
+import { DBUtil } from "../util/DBUtil";
 jest.setTimeout(20000);
-beforeAll(async (done) => {
-	const options = await getConnectionOptions(process.env.NODE_ENV);
-	await createConnection({
-		...options,
-		name: process.env.NODE_ENV,
-	});
+const db = new DBUtil();
+const su = new SystemUtil();
 
+beforeAll(async (done) => {
+	await db.connect();
 	done();
 });
 
 afterAll(async (done) => {
-	await getConnection(process.env.NODE_ENV).close();
+	su.sleep(1500); // let the db connection calm down
+	await db.disconnect();
 	done();
 });
 
@@ -36,32 +35,39 @@ describe("Record Endpoint", () => {
 	});
 
 	it("Returns in Json content type", async () => {
-		await apptest.get("/api/record/user").expect("Content-Type", /json/);
+		const response = await apptest.get("/api/record/user");
+		expect(response.headers["content-type"]).toMatch(/json/);
 	});
 
 	it("Has a task endpoint", async () => {
-		await apptest.get("/api/record/task").expect(200);
+		const response = await apptest.get("/api/record/task");
+		expect(response.status).toBe(200);
 	});
 
 	it("Has group endpoint", async () => {
-		await apptest.get("/api/record/group").expect(200);
+		const response = await apptest.get("/api/record/group");
+		expect(response.status).toBe(200);
 	});
 
 	it("Allows searching groups by membership", async () => {
-		await apptest.get("/api/record/group_membership").expect(200);
+		const response = await apptest.get("/api/record/group_membership");
+		expect(response.status).toBe(200);
 	});
 
 	it("Fails on bad table name", async () => {
-		await apptest.get("/api/record/asjdlkfjasd").expect(404);
+		const response = await apptest.get("/api/record/asjdlkfjasd");
+		expect(response.status).toBe(404);
 	});
 
 	it("Fails on invalid record id", async () => {
-		await apptest.get("/api/record/user/123").expect(400);
+		const response = await apptest.get("/api/record/user/123");
+		expect(response.status).toBe(400);
 	});
 
 	it("Fails on missing record ", async () => {
 		const uuid = v4();
-		await apptest.get(`/api/record/user/${uuid}`).expect(404);
+		const response = await apptest.get(`/api/record/user/${uuid}`);
+		expect(response.status).toBe(404);
 	});
 
 	it("gets child records in a parent table query", async () => {
@@ -84,8 +90,8 @@ describe("Record Endpoint", () => {
 			.set({ "X-User": "tester" })
 			.send(testHw)
 			.then((response) => {
-				console.log(response.error);
-				console.log(response.body);
+				su.error(response.error);
+				su.info(response.body);
 			});
 
 		await apptest
@@ -93,23 +99,24 @@ describe("Record Endpoint", () => {
 			.set({ "X-User": "tester" })
 			.send(testComp)
 			.then((response) => {
-				console.log(response.error);
-				console.log(response.body);
+				su.error(response.error);
+				su.info(response.body);
 			});
 
 		await apptest.get("/api/record/hw").then((response) => {
-			console.log(response.error);
-			console.log(response.body);
+			su.error(response.error);
+			su.info(response.body);
 		});
 	});
 });
 
 describe("UI Endpoint", () => {
 	const apptest = request(http.createServer(app.callback()));
+
+	// TODO: build global endpoint
 	it("Has a ui endpoint for global actions", async () => {
-		const response = await apptest
-			.get("/api/ui/global/actions")
-			.expect(200);
+		const response = await apptest.get("/api/ui/global/actions");
+		expect(response.status).toBe(200);
 
 		const body = JSON.parse(response.body);
 		expect(body).toHaveProperty("form");
@@ -119,9 +126,11 @@ describe("UI Endpoint", () => {
 	});
 
 	it("Has a UI endpoint for incident", async () => {
-		const response = await apptest.get("/api/ui/incident").expect(200);
+		const response = await apptest.get("/api/ui/incident");
 
-		const body = JSON.parse(response.body);
+		expect(response.status).toBe(200);
+
+		const body = response.body;
 		expect(body).toHaveProperty("form");
 		expect(body).toHaveProperty("list");
 		expect(body).toHaveProperty("actions");
@@ -131,10 +140,15 @@ describe("UI Endpoint", () => {
 describe("Schema Endpoint", () => {
 	const apptest = request(http.createServer(app.callback()));
 
+	// TODO: Fix endpoints for extended tables
 	it("Has a schema endpoint for incident", async () => {
-		const response = await apptest.get("/api/schema/incident").expect(200);
+		const response = await apptest.get("/api/schema/incident");
+		su.info("Schema response body");
+		su.info(response.body);
 
-		const body = JSON.parse(response.body);
+		expect(response.status).toBe(200);
+
+		const body = response.body;
 		expect(body instanceof Array).toBe(true);
 		expect(body[0] instanceof Object).toBe(true);
 		expect(body[0]).toHaveProperty("column_name");

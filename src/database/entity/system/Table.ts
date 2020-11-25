@@ -13,6 +13,9 @@ export class Table extends Record {
 	@Column("text", { nullable: true })
 	extends: string;
 
+	@Column("text", { nullable: true })
+	extends_root: string;
+
 	@Column("boolean", { default: false })
 	autonumber: boolean;
 

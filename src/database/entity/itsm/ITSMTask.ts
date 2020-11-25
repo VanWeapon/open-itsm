@@ -3,7 +3,10 @@ import { ConfigurationItem } from "../cmdb/ConfigurationItem";
 import { Task } from "../core/Task";
 
 @Entity("itsm_task", { schema: "itsm" })
-@TableInheritance({ column: { name: "class_name", type: "text" } })
+@TableInheritance({
+	pattern: "STI",
+	column: { name: "class_name", type: "text" },
+})
 export abstract class ITSMTask extends Task {
 	@ManyToOne(() => ITSMTask, { nullable: true })
 	parent_task: ITSMTask;

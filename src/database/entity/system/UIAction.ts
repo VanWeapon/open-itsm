@@ -1,6 +1,6 @@
-import { Column, Entity, JoinTable, ManyToMany } from "typeorm";
+import { Column, Entity, OneToMany } from "typeorm";
+import { UIActionRequiresRole } from "./m2m/UIActionRequiresRole";
 import { Record } from "./Record";
-import { Role } from "./Role";
 
 @Entity("ui_action", { schema: "system" })
 export class UIAction extends Record {
@@ -55,7 +55,8 @@ export class UIAction extends Record {
 	@Column("text", { default: "" })
 	server_script: string;
 
-	@ManyToMany(() => Role, { nullable: true })
-	@JoinTable({ name: "ui_action_requires_role" })
-	requires_role: Role[];
+	@OneToMany(() => UIActionRequiresRole, (m2m) => m2m.ui_action, {
+		nullable: true,
+	})
+	requires_roles: UIActionRequiresRole[];
 }
